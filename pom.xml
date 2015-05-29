@@ -4,4 +4,12 @@
   <artifactId>lda</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>Linked Data Analytics</name>
+  
+  <dependencies>
+  	<dependency>
+  		<groupId>org.apache.storm</groupId>
+  		<artifactId>storm-core</artifactId>
+  		<version>0.9.3</version>
+  	</dependency>
+  </dependencies>
 </project>
