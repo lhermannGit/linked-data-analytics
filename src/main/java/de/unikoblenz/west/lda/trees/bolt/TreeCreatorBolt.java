@@ -9,31 +9,31 @@ import backtype.storm.topology.base.BaseRichBolt;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
-import de.unikoblenz.west.lda.trees.spout.SchemExSpout;
+import de.unikoblenz.west.lda.trees.spout.InputSpout;
 
 /**
  * This class provides a storm bolt that consumes the output of
- * {@link SchemExSpout} and provides trees
+ * {@link InputSpout} and provides trees
  * 
  * @author Martin Koerner <info@mkoerner.de>
  *
  */
 public class TreeCreatorBolt extends BaseRichBolt {
-	OutputCollector _collector;
+	OutputCollector collector;
 	
 		    
 		    
 		    public void prepare(Map conf, TopologyContext context, OutputCollector collector) {
-		      _collector = collector;
+		      this.collector = collector;
 		    }
 
 		    public void execute(Tuple tuple) {
-		      _collector.emit(tuple, new Values(tuple.getString(0) + "!!!"));
-		      _collector.ack(tuple);
+		      this.collector.emit(tuple, new Values(tuple.getString(0) + "!!!"));
+		      this.collector.ack(tuple);
 		    }
 
 		    public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		      declarer.declare(new Fields("word"));
+		      declarer.declare(new Fields("tree"));
 		    }
 
 

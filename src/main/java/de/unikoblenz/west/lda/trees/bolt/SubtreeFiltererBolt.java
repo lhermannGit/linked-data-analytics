@@ -17,6 +17,8 @@ import backtype.storm.tuple.Values;
  * @author Martin Koerner <info@mkoerner.de>
  *
  */
+
+//probably irrelevant, better use SubtreeCounterBolt for filtering the most relevant Patterns
 public class SubtreeFiltererBolt extends BaseBasicBolt {
 
 	  public void execute(Tuple tuple, BasicOutputCollector collector) {

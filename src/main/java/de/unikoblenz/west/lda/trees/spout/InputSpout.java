@@ -1,5 +1,6 @@
 package de.unikoblenz.west.lda.trees.spout;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Random;
 
@@ -12,21 +13,25 @@ import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
 import backtype.storm.utils.Utils;
 
-public class SchemExSpout extends BaseRichSpout {
-	  SpoutOutputCollector _collector;
-	  Random _rand;
+public class InputSpout extends BaseRichSpout {
+	  SpoutOutputCollector collector;
+	  Random rand;
 
 	  public void open(Map conf, TopologyContext context, SpoutOutputCollector collector) {
-	    _collector = collector;
-	    _rand = new Random();
+	    this.collector = collector;
+	    rand = new Random();
 	  }
 
 	  public void nextTuple() {
 	    Utils.sleep(100);
-	    String[] sentences = new String[]{ "the cow jumped over the moon", "an apple a day keeps the doctor away",
+	   /* String[] sentences = new String[]{ "the cow jumped over the moon", "an apple a day keeps the doctor away",
 	        "four score and seven years ago", "snow white and the seven dwarfs", "i am at two with nature" };
-	    String sentence = sentences[_rand.nextInt(sentences.length)];
-	    _collector.emit(new Values(sentence));
+	    String sentence = sentences[_rand.nextInt(sentences.length)];*/
+	    ArrayList<String> triplesList = new ArrayList<String>();
+	    //Insert Triples here
+	    triplesList.add("123");
+	    triplesList.add("456");
+	    this.collector.emit(new Values(triplesList));
 	  }
 
 	  @Override
@@ -38,7 +43,7 @@ public class SchemExSpout extends BaseRichSpout {
 	  }
 
 	  public void declareOutputFields(OutputFieldsDeclarer declarer) {
-	    declarer.declare(new Fields("word"));
+	    declarer.declare(new Fields("triples"));
 	  }
 
 }

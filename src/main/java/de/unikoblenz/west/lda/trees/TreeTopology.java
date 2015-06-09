@@ -9,7 +9,7 @@ import de.unikoblenz.west.lda.trees.bolt.SubtreeCounterBolt;
 import de.unikoblenz.west.lda.trees.bolt.SubtreeExtractorBolt;
 import de.unikoblenz.west.lda.trees.bolt.SubtreeFiltererBolt;
 import de.unikoblenz.west.lda.trees.bolt.TreeCreatorBolt;
-import de.unikoblenz.west.lda.trees.spout.SchemExSpout;
+import de.unikoblenz.west.lda.trees.spout.InputSpout;
 
 /**
  * This class creates the topology for extracting frequent subtrees from (nquad)
@@ -19,20 +19,17 @@ import de.unikoblenz.west.lda.trees.spout.SchemExSpout;
  *
  */
 public class TreeTopology { 
-	
-	/**
-	 * This is a basic example of a Storm topology.
-	 */
 
 
 	  public static void main(String[] args) throws Exception {
 		    TopologyBuilder builder = new TopologyBuilder();
-
-		    builder.setSpout("word", new SchemExSpout(), 10);
-		    builder.setBolt("exclaim1", new TreeCreatorBolt(), 3).shuffleGrouping("word");
-		    builder.setBolt("exclaim2", new SubtreeExtractorBolt(), 2).shuffleGrouping("exclaim1");
-		    builder.setBolt("exclaim3", new SubtreeCounterBolt(), 2).shuffleGrouping("exclaim2");
-		    builder.setBolt("exclaim4", new SubtreeFiltererBolt(), 2).shuffleGrouping("exclaim3");
+		    
+		    //Amount of Threads per Bolt should be changed
+		    builder.setSpout("InputSpout", new InputSpout(), 10);
+		    builder.setBolt("TreeCreatorBolt", new TreeCreatorBolt(), 3).shuffleGrouping("InputSpout");
+		    builder.setBolt("SubtreeExtractorBolt", new SubtreeExtractorBolt(), 2).shuffleGrouping("TreeCreatorBolt");
+		    builder.setBolt("SubtreeCounterBolt", new SubtreeCounterBolt(), 2).shuffleGrouping("SubtreeExtractorBolt");
+		    builder.setBolt("SubtreeFiltererBolt", new SubtreeFiltererBolt(), 2).shuffleGrouping("SubtreeCounterBolt");
 		    
 		    Config conf = new Config();
 		    conf.setDebug(true);
