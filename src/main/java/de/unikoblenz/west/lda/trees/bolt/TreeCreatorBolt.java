@@ -20,9 +20,11 @@ import de.unikoblenz.west.lda.trees.spout.RDFSpout;
  *
  */
 public class TreeCreatorBolt extends BaseRichBolt {
+	private static final long serialVersionUID = 1L;
+	
 	OutputCollector collector;
 
-	public void prepare(Map conf, TopologyContext context,
+	public void prepare(@SuppressWarnings("rawtypes") Map conf, TopologyContext context,
 			OutputCollector collector) {
 		this.collector = collector;
 	}
