@@ -20,19 +20,22 @@ import backtype.storm.tuple.Values;
 public class SubtreeExtractorBolt extends BaseRichBolt {
 
 	OutputCollector collector;
-	   
-    
-    public void prepare(Map conf, TopologyContext context, OutputCollector collector) {
-      this.collector = collector;
-    }
 
-    public void execute(Tuple tuple) {
-      this.collector.emit(tuple, new Values(tuple.getString(0) + "!!!SubtreeExtractorBolt"));
-      this.collector.ack(tuple);
-    }
+	public void prepare(Map conf, TopologyContext context,
+			OutputCollector collector) {
+		this.collector = collector;
+	}
 
-    public void declareOutputFields(OutputFieldsDeclarer declarer) {
-      declarer.declare(new Fields("tree"));
-    }
+	public void execute(Tuple tuple) {
+
+		String tree = tuple.getString(0);
+		String[] treeSplit = tree.split(" ");
+		this.collector.emit(tuple, new Values(treeSplit[0] + treeSplit[1]));
+		this.collector.ack(tuple);
+	}
+
+	public void declareOutputFields(OutputFieldsDeclarer declarer) {
+		declarer.declare(new Fields("tree"));
+	}
 
 }

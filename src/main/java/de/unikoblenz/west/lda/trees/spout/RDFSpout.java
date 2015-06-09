@@ -2,7 +2,6 @@ package de.unikoblenz.west.lda.trees.spout;
 
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Random;
 
 import backtype.storm.spout.SpoutOutputCollector;
 import backtype.storm.task.TopologyContext;
@@ -14,12 +13,10 @@ import backtype.storm.utils.Utils;
 
 public class RDFSpout extends BaseRichSpout {
 	SpoutOutputCollector collector;
-	Random rand;
 
 	public void open(Map conf, TopologyContext context,
 			SpoutOutputCollector collector) {
 		this.collector = collector;
-		rand = new Random();
 	}
 
 	public void nextTuple() {
