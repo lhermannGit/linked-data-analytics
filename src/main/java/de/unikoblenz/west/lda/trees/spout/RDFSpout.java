@@ -12,9 +12,11 @@ import backtype.storm.tuple.Values;
 import backtype.storm.utils.Utils;
 
 public class RDFSpout extends BaseRichSpout {
+	private static final long serialVersionUID = 1L;
+	
 	SpoutOutputCollector collector;
 
-	public void open(Map conf, TopologyContext context,
+	public void open(@SuppressWarnings("rawtypes") Map conf, TopologyContext context,
 			SpoutOutputCollector collector) {
 		this.collector = collector;
 	}
