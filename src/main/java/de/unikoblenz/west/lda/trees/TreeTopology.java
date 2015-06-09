@@ -9,7 +9,7 @@ import de.unikoblenz.west.lda.trees.bolt.SubtreeCounterBolt;
 import de.unikoblenz.west.lda.trees.bolt.SubtreeExtractorBolt;
 import de.unikoblenz.west.lda.trees.bolt.SubtreeFiltererBolt;
 import de.unikoblenz.west.lda.trees.bolt.TreeCreatorBolt;
-import de.unikoblenz.west.lda.trees.spout.InputSpout;
+import de.unikoblenz.west.lda.trees.spout.RDFSpout;
 
 /**
  * This class creates the topology for extracting frequent subtrees from (nquad)
@@ -25,7 +25,7 @@ public class TreeTopology {
 		    TopologyBuilder builder = new TopologyBuilder();
 		    
 		    //Amount of Threads per Bolt should be changed
-		    builder.setSpout("InputSpout", new InputSpout(), 10);
+		    builder.setSpout("InputSpout", new RDFSpout(), 10);
 		    builder.setBolt("TreeCreatorBolt", new TreeCreatorBolt(), 3).shuffleGrouping("InputSpout");
 		    builder.setBolt("SubtreeExtractorBolt", new SubtreeExtractorBolt(), 2).shuffleGrouping("TreeCreatorBolt");
 		    builder.setBolt("SubtreeCounterBolt", new SubtreeCounterBolt(), 2).shuffleGrouping("SubtreeExtractorBolt");

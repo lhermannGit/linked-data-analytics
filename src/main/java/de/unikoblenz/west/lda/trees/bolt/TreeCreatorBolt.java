@@ -1,5 +1,6 @@
 package de.unikoblenz.west.lda.trees.bolt;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 import backtype.storm.task.OutputCollector;
@@ -9,32 +10,35 @@ import backtype.storm.topology.base.BaseRichBolt;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
-import de.unikoblenz.west.lda.trees.spout.InputSpout;
+import de.unikoblenz.west.lda.trees.spout.RDFSpout;
 
 /**
  * This class provides a storm bolt that consumes the output of
- * {@link InputSpout} and provides trees
+ * {@link RDFSpout} and provides trees
  * 
  * @author Martin Koerner <info@mkoerner.de>
  *
  */
 public class TreeCreatorBolt extends BaseRichBolt {
 	OutputCollector collector;
-	
-		    
-		    
-		    public void prepare(Map conf, TopologyContext context, OutputCollector collector) {
-		      this.collector = collector;
-		    }
 
-		    public void execute(Tuple tuple) {
-		      this.collector.emit(tuple, new Values(tuple.getString(0) + "!!!"));
-		      this.collector.ack(tuple);
-		    }
+	public void prepare(Map conf, TopologyContext context,
+			OutputCollector collector) {
+		this.collector = collector;
+	}
 
-		    public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		      declarer.declare(new Fields("tree"));
-		    }
+	public void execute(Tuple tuple) {
+		@SuppressWarnings("unchecked")
+		ArrayList<String> triples = (ArrayList<String>) tuple.getValue(0);
 
+		this.collector.emit(tuple, new Values(triples.get(0) + triples.get(1)
+				+ triples.get(2)));
+
+		this.collector.ack(tuple);
+	}
+
+	public void declareOutputFields(OutputFieldsDeclarer declarer) {
+		declarer.declare(new Fields("tree"));
+	}
 
 }
