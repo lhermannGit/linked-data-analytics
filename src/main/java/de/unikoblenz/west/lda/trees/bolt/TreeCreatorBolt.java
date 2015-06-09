@@ -13,8 +13,8 @@ import backtype.storm.tuple.Values;
 import de.unikoblenz.west.lda.trees.spout.RDFSpout;
 
 /**
- * This class provides a storm bolt that consumes the output of
- * {@link RDFSpout} and provides trees
+ * This class provides a storm bolt that consumes the output of {@link RDFSpout}
+ * and provides trees
  * 
  * @author Martin Koerner <info@mkoerner.de>
  *
@@ -31,8 +31,9 @@ public class TreeCreatorBolt extends BaseRichBolt {
 		@SuppressWarnings("unchecked")
 		ArrayList<String> triples = (ArrayList<String>) tuple.getValue(0);
 
-		this.collector.emit(tuple, new Values(triples.get(0) + triples.get(1)
-				+ triples.get(2)));
+		this.collector.emit(tuple,
+				new Values(triples.get(0) + "\t" + triples.get(1) + "\t"
+						+ triples.get(2)));
 
 		this.collector.ack(tuple);
 	}

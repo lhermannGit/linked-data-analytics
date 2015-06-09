@@ -29,8 +29,9 @@ public class SubtreeExtractorBolt extends BaseRichBolt {
 	public void execute(Tuple tuple) {
 
 		String tree = tuple.getString(0);
-		String[] treeSplit = tree.split(" ");
-		this.collector.emit(tuple, new Values(treeSplit[0] + treeSplit[1]));
+		String[] treeSplit = tree.split("\t");
+		this.collector.emit(tuple, new Values(treeSplit[0] + "\t"
+				+ treeSplit[1]));
 		this.collector.ack(tuple);
 	}
 
