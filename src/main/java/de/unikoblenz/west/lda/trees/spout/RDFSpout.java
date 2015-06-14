@@ -1,5 +1,6 @@
 package de.unikoblenz.west.lda.trees.spout;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Map;
@@ -15,6 +16,8 @@ import backtype.storm.utils.Utils;
 import org.semanticweb.yars.nx.Node;
 import org.semanticweb.yars.nx.parser.*;
 
+import de.unikoblenz.west.lda.input.*;
+
 
 
 public class RDFSpout extends BaseRichSpout {
@@ -26,8 +29,9 @@ public class RDFSpout extends BaseRichSpout {
     String fileLocation;
     NxParser nxp;
     
-    public RDFSpout(InputStream input){
-    	this.input = input;
+    public RDFSpout(String fileLocation) throws IOException{
+    	ZipInput zip = new ZipInput(fileLocation);
+    	input = zip.getInputStream(fileLocation);
     	nxp = new NxParser(input);
     }
     
@@ -47,11 +51,17 @@ public class RDFSpout extends BaseRichSpout {
     	
     	while(pack.size()< maxPackageSize && nxp.hasNext()){
     		line = nxp.next();
+    		subject = line[0].toString();
+    		predicate = line[1].toString();
+    		object = line[2].toString();
+    		
+    		pack.add(subject + " " + predicate + " " + object ); 
+    		
     		
     	}
     	
 		
-    	return null;
+    	return pack;
     	
     }
     
@@ -66,14 +76,7 @@ public class RDFSpout extends BaseRichSpout {
 
 	public void nextTuple() {
 		Utils.sleep(100);
-		ArrayList<String> triplesList = new ArrayList<String>();
-		// Insert Triples here
-		triplesList
-				.add("<http://example.com/tim> <http://example.com/likes> <http://example.com/car>");
-		triplesList
-				.add("<http://example.com/tim> <http://example.com/likes> <http://example.com/cake>");
-		triplesList
-				.add("<http://example.com/cake> <http://example.com/is> <http://example.com/sweet>");
+		ArrayList<String> triplesList = pack();
 		this.collector.emit(new Values(triplesList));
 	}
 
