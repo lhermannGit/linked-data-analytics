@@ -12,7 +12,7 @@ import backtype.storm.tuple.Values;
 
 /**
  * 
- * @author Martin Koerner <info@mkoerner.de>
+ * @author Martin Koerner <info@mkoerner.de>, Olga Zagovora <zagovora@uni-koblenz.de>	
  *
  */
 public class SubtreeCounterBolt extends BaseRichBolt {

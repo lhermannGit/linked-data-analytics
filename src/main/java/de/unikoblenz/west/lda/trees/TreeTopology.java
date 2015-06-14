@@ -15,7 +15,7 @@ import de.unikoblenz.west.lda.trees.spout.RDFSpout;
  * This class creates the topology for extracting frequent subtrees from (nquad)
  * rdf data
  * 
- * @author Martin Koerner <info@mkoerner.de>
+ * @author Martin Koerner <info@mkoerner.de>, Olga Zagovora <zagovora@uni-koblenz.de>	
  *
  */
 public class TreeTopology { 

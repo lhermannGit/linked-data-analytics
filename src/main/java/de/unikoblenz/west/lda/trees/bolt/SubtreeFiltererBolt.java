@@ -11,7 +11,7 @@ import backtype.storm.tuple.Tuple;
 
 /**
  * 
- * @author Martin Koerner <info@mkoerner.de>
+ * @author Martin Koerner <info@mkoerner.de>, Olga Zagovora <zagovora@uni-koblenz.de>	
  *
  */
 
