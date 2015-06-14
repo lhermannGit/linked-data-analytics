@@ -11,5 +11,18 @@
   		<artifactId>storm-core</artifactId>
   		<version>0.9.3</version>
   	</dependency>
+  	<dependency>
+  		<groupId>org.semanticweb.yars</groupId>
+  		<artifactId>nxparser</artifactId>
+  		<version>1.2.6</version>
+  	</dependency>
   </dependencies>
+
+  <repositories>
+  	<repository>
+  		<id>nxparser-repo</id>
+  		<name>Nx-Parser Maven Repository</name>
+  		<url>http://nxparser.googlecode.com/svn/repository</url>
+  	</repository>
+  </repositories>
 </project>
