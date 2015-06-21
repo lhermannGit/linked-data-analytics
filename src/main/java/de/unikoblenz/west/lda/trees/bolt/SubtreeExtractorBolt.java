@@ -14,7 +14,7 @@ import backtype.storm.tuple.Values;
  * This class provides a storm bolt that consumes tree from
  * {@link SubtreeExtractorBolt} and returns a list of subtrees
  * 
- * @author Martin Koerner <info@mkoerner.de>
+ * @author Martin Koerner <info@mkoerner.de>, Olga Zagovora <zagovora@uni-koblenz.de>	
  *
  */
 public class SubtreeExtractorBolt extends BaseRichBolt {

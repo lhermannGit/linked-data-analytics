@@ -16,7 +16,7 @@ import de.unikoblenz.west.lda.trees.spout.RDFSpout;
  * This class provides a storm bolt that consumes the output of {@link RDFSpout}
  * and provides trees
  * 
- * @author Martin Koerner <info@mkoerner.de>
+ * @author Martin Koerner <info@mkoerner.de>, Olga Zagovora <zagovora@uni-koblenz.de>	
  *
  */
 public class TreeCreatorBolt extends BaseRichBolt {

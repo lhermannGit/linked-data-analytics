@@ -11,6 +11,14 @@ import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
 import backtype.storm.utils.Utils;
 
+
+/**
+ * 
+ * @author Olga Zagovora <zagovora@uni-koblenz.de>	
+ *
+ */
+
+
 public class RDFSpout extends BaseRichSpout {
 	private static final long serialVersionUID = 1L;
 	
