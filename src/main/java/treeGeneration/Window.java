@@ -93,13 +93,12 @@ public class Window {
 						 //clone tree, link children of old rootnode to new big tree 
 						 //and delete old rootnode						 
 						 clonedTree = new Rootnode(root.getName());
-						 //clonedTree = root.cloneTree;	
-						 System.out.println("cloned tree "+ root.getName());
+						 root.cloneTree(clonedTree);	
 						 for (ChildNode oldTreeChild: clonedTree.getChildren()){
 							 existingSubject.addChild(oldTreeChild);
 							 System.out.println("linked child "+ oldTreeChild.getName() + " to existing node " + existingSubject.getName());
 						 }
-						 System.out.println("deleted last Root "+ clonedTree.getName());
+						 System.out.println("deleted Root "+ clonedTree.getName());
 						 clonedTree = null;							 
 						 size--;
 					 }
@@ -119,5 +118,6 @@ public class Window {
 			 }
 		 }
 	}
+
 
 }

@@ -42,9 +42,8 @@ public class ChildNode implements Node{
 	public void addIfInside(int subject, int pred, int object, List<ChildNode> insertedNodes){
 		if (this.name == subject){
 			ChildNode newNode = new ChildNode(object,pred);
-			children.add(newNode);
+			addChild(newNode);
 			insertedNodes.add(newNode);
-//			root.sucSize();
 			// TODO: fstm.sendSubtree(newNode,root);
 			System.out.println("added new Child "+ object + " with predicate "+ pred + " to node " + this.name);
 		}
@@ -52,5 +51,18 @@ public class ChildNode implements Node{
 			k.addIfInside(subject, pred, object, insertedNodes);
 		}
 	}
+	
+	public void cloneTree(ChildNode clonedTree){
+		ChildNode newNode;
+		for (ChildNode child: children){
+			newNode = new ChildNode(child.getName(), child.getPredicate());
+			clonedTree.addChild(newNode);
+			child.cloneTree(newNode);
+		}
+
+		System.out.println("cloned Childnode "+ this.name);
+	}
 }
+
+
 
