@@ -1,4 +1,4 @@
-package treeGeneration;
+package de.unikoblenz.west.lda.treeGeneration;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
