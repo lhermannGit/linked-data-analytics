@@ -11,21 +11,27 @@ public class Window {
 	public static final int WINDOW_SIZE = 100;
 
 	private static int size;
-	private static List<Rootnode> rootnodes;
-	private static Iterator<Rootnode> rootnodesIterator;
+	private static List<RootNode> rootNodes;
+	private static Iterator<RootNode> rootNodesIterator;
 
+	/**
+	 * Arguments: Path to input file
+	 * 
+	 * @param args
+	 * @throws IOException
+	 */
 	public static void main(String[] args) throws IOException {
 
 		int testcount = 0;
 
-		rootnodes = new ArrayList<Rootnode>();
+		rootNodes = new ArrayList<RootNode>();
 		List<ChildNode> insertedNodes = new ArrayList<ChildNode>();
 		BufferedReader br = new BufferedReader(new FileReader(args[0]));
 		String line;
 		String[] splitRDF;
 		int rdfSubject;
 		int rdfObject;
-		Rootnode newRootnode;
+		RootNode newRootNode = null;
 		ChildNode newNode;
 		size = 0;
 		while ((line = br.readLine()) != null) {
@@ -38,27 +44,27 @@ public class Window {
 
 			// look through all nodes in all trees if new subject already exists
 			// as an object and add it if found
-			for (Rootnode rootnode : rootnodes) {
+			for (RootNode rootnode : rootNodes) {
 				rootnode.addIfInside(rdfSubject, Integer.parseInt(splitRDF[1]),
 						rdfObject, insertedNodes);
 			}
 
-			// if node does not exist yet, create new Rootnode and ChildNode and
+			// if node does not exist yet, create new RootNode and ChildNode and
 			// link them
 			if (insertedNodes.isEmpty()) {
-				newRootnode = new Rootnode(rdfSubject);
-				rootnodes.add(newRootnode);
+				newRootNode = new RootNode(rdfSubject);
+				rootNodes.add(newRootNode);
 				newNode = new ChildNode(Integer.parseInt(splitRDF[2]),
 						Integer.parseInt(splitRDF[1]));
-				newRootnode.addChild(newNode);
+				newRootNode.addChild(newNode);
 				insertedNodes.add(newNode);
 				System.out.println("added new Root " + rdfSubject);
 				System.out.println("added new Child " + newNode.getName()
 						+ " with predicate " + newNode.getPredicate()
-						+ " to rootnode " + newRootnode.getName());
+						+ " to rootnode " + newRootNode.getName());
 				size = size + 2;
 
-				// TODO: fstm.sendSubtree(newNode, newRootnode)
+				// TODO: fstm.sendSubtree(newNode, newRootNode)
 			} else {
 				// needs to be tested if size + 1 is close enough to actual size
 				size++;
@@ -73,18 +79,24 @@ public class Window {
 		}
 		br.close();
 		System.out.println("size = " + size);
+
+		// test printouts for SubtreeExtraction
+		SubtreeExtractor subtreeExtractor = new SubtreeExtractor();
+		List<String> extractedSubtrees = subtreeExtractor
+				.extractSubtrees(newRootNode);
+
 	}
 
 	// combine a tree with added Nodes if needed
 	public static void combineTrees(int rdfObject, List<ChildNode> insertedNodes) {
-		Rootnode root;
-		rootnodesIterator = rootnodes.iterator();
+		RootNode root;
+		rootNodesIterator = rootNodes.iterator();
 		ChildNode existingSubject;
-		Rootnode clonedTree;
+		RootNode clonedTree;
 
-		// look for rootnodes with the same name as rdfObject
-		while (rootnodesIterator.hasNext()) {
-			root = rootnodesIterator.next();
+		// look for rootNodes with the same name as rdfObject
+		while (rootNodesIterator.hasNext()) {
+			root = rootNodesIterator.next();
 			if (rdfObject == root.getName()) {
 
 				// clone only, if more than 1 Node was added this round
@@ -92,10 +104,10 @@ public class Window {
 					existingSubject = insertedNodes.get(0);
 					if (insertedNodes.size() > 1) {
 
-						// clone tree, link children of old rootnode to new big
+						// clone tree, link children of old rootNode to new big
 						// tree
-						// and delete old rootnode
-						clonedTree = new Rootnode(root.getName());
+						// and delete old rootNode
+						clonedTree = new RootNode(root.getName());
 						root.cloneTree(clonedTree);
 						for (ChildNode oldTreeChild : clonedTree.getChildren()) {
 							existingSubject.addChild(oldTreeChild);
@@ -110,8 +122,8 @@ public class Window {
 						size--;
 					}
 
-					// link children of old rootnode to new big tree and delete
-					// old rootnode
+					// link children of old rootNode to new big tree and delete
+					// old rootNode
 					else {
 						for (ChildNode oldTreeChild : root.getChildren()) {
 							existingSubject.addChild(oldTreeChild);
@@ -122,7 +134,7 @@ public class Window {
 						}
 						System.out.println("deleted last root "
 								+ root.getName());
-						rootnodesIterator.remove();
+						rootNodesIterator.remove();
 						size--;
 					}
 					insertedNodes.remove(0);
