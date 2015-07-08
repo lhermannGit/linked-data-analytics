@@ -6,6 +6,12 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 
+/**
+ * Class for extracting subtrees from a given rootNode
+ *
+ * @author Martin Koerner <info@mkoerner.de>
+ *
+ */
 public class SubtreeExtractor {
 
 	public List<Subtree> extractSubtrees(RootNode rootNode) {
@@ -14,7 +20,8 @@ public class SubtreeExtractor {
 		if (rootNode == null) {
 			return extractedSubtrees;
 		}
-		// initialize tree
+		// generate List of LinkedHashSets (so we don't have duplicates but
+		// preserve the order) for every child of the root
 		List<ChildNode> sortedChildren = this.sortByPredicate(rootNode
 				.getChildren());
 		List<LinkedHashSet<Subtree>> extractedChildrenSubtrees = new ArrayList<LinkedHashSet<Subtree>>();
@@ -56,13 +63,12 @@ public class SubtreeExtractor {
 				}
 			}
 			// add combined subtrees
-			extractedSubtrees.addAll(this.cloneList(combinedExtractedSubtrees));
+			extractedSubtrees.addAll(combinedExtractedSubtrees);
 
 			// add current subtrees
-
 			for (Subtree currentTree : extractedChildrenSubtrees
 					.get(childTreesIndex)) {
-				extractedSubtrees.add(currentTree.clone());
+				extractedSubtrees.add(currentTree);
 			}
 		}
 
