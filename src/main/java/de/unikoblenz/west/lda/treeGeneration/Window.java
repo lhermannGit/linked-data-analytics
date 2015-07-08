@@ -16,7 +16,7 @@ public class Window {
 
 	/**
 	 * Arguments: Path to input file
-	 * 
+	 *
 	 * @param args
 	 * @throws IOException
 	 */
@@ -25,7 +25,7 @@ public class Window {
 		int testcount = 0;
 
 		rootNodes = new ArrayList<RootNode>();
-		List<ChildNode> insertedNodes = new ArrayList<ChildNode>();
+		ArrayList<ChildNode> insertedNodes = new ArrayList<ChildNode>();
 		BufferedReader br = new BufferedReader(new FileReader(args[0]));
 		String line;
 		String[] splitRDF;
@@ -36,8 +36,8 @@ public class Window {
 		size = 0;
 		while ((line = br.readLine()) != null) {
 			System.out.println("----- line read: " + testcount++ + " -----"); // just
-																				// for
-																				// output/testing
+			// for
+			// output/testing
 			splitRDF = line.split("\\s+");
 			rdfSubject = Integer.parseInt(splitRDF[0]);
 			rdfObject = Integer.parseInt(splitRDF[2]);
@@ -80,10 +80,15 @@ public class Window {
 		br.close();
 		System.out.println("size = " + size);
 
+		System.out.println("\ngenerate subtrees:");
+
 		// test printouts for SubtreeExtraction
 		SubtreeExtractor subtreeExtractor = new SubtreeExtractor();
 		List<String> extractedSubtrees = subtreeExtractor
 				.extractSubtrees(newRootNode);
+		for (String subtree : extractedSubtrees) {
+			System.out.println(subtree);
+		}
 
 	}
 
