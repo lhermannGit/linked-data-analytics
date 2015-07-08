@@ -25,7 +25,7 @@ public class Window {
 		int testcount = 0;
 
 		rootNodes = new ArrayList<RootNode>();
-		ArrayList<ChildNode> insertedNodes = new ArrayList<ChildNode>();
+		List<ChildNode> insertedNodes = new ArrayList<ChildNode>();
 		BufferedReader br = new BufferedReader(new FileReader(args[0]));
 		String line;
 		String[] splitRDF;
@@ -84,10 +84,10 @@ public class Window {
 
 		// test printouts for SubtreeExtraction
 		SubtreeExtractor subtreeExtractor = new SubtreeExtractor();
-		List<String> extractedSubtrees = subtreeExtractor
+		List<Subtree> extractedSubtrees = subtreeExtractor
 				.extractSubtrees(newRootNode);
-		for (String subtree : extractedSubtrees) {
-			System.out.println(subtree);
+		for (Subtree subtree : extractedSubtrees) {
+			System.out.println(subtree.toString());
 		}
 
 	}

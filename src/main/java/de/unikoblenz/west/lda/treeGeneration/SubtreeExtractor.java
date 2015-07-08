@@ -5,27 +5,21 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 public class SubtreeExtractor {
 
-	private final String levelSeparator = "^";
-	private final String itemSeparator = ",";
-
-	@SuppressWarnings("unchecked")
-	public List<String> extractSubtrees(RootNode rootNode) {
-		ArrayList<String> extractedSubtrees = new ArrayList<String>();
+	public List<Subtree> extractSubtrees(RootNode rootNode) {
+		List<Subtree> extractedSubtrees = new ArrayList<Subtree>();
 
 		// initialize tree
 		List<ChildNode> sortedChildren = this.sortByPredicate(rootNode
 				.getChildren());
-		List<LinkedHashSet<String>> extractedChildrenSubtrees = new ArrayList<LinkedHashSet<String>>();
+		List<LinkedHashSet<Subtree>> extractedChildrenSubtrees = new ArrayList<LinkedHashSet<Subtree>>();
 		for (ChildNode child : sortedChildren) {
 			// get children subtrees in separate lists
-			extractedChildrenSubtrees.add(new LinkedHashSet<String>(this
+			extractedChildrenSubtrees.add(new LinkedHashSet<Subtree>(this
 					.extendSubtreeWithChildNode(
-							(ArrayList<String>) extractedSubtrees.clone(),
-							child)));
+							this.cloneList(extractedSubtrees), child)));
 		}
 
 		// we need this more complicated check because otherwise we would
@@ -37,119 +31,94 @@ public class SubtreeExtractor {
 			extractedChildPredicates.add(sortedChildren.get(childTreesIndex)
 					.getPredicate());
 
-			ArrayList<String> combinedExtractedSubtrees = new ArrayList<String>();
-			for (String previousTree : extractedSubtrees) {
+			List<Subtree> combinedExtractedSubtrees = new ArrayList<Subtree>();
+			for (Subtree previousTree : extractedSubtrees) {
 				// subtree contains root of original tree
-				if (previousTree.contains(this.itemSeparator)
-						&& this.containsRoot(extractedChildPredicates,
-								previousTree)) {
+				if (previousTree.hasRoot(extractedChildPredicates)) {
 
 					// add current subtrees that contain the root to previous
 					// tree that contains the root
-					for (String currentTree : extractedChildrenSubtrees
+					for (Subtree currentTree : extractedChildrenSubtrees
 							.get(childTreesIndex)) {
 						// subtree contains root of original tree
-						if (currentTree.contains(this.itemSeparator)
-								&& this.containsRoot(extractedChildPredicates,
-										currentTree)) {
-							combinedExtractedSubtrees.add(this.addAfter(
-									previousTree, currentTree));
+						if (currentTree.hasRoot(extractedChildPredicates)) {
+							// create new subtree as combination
+							Subtree combinedSubtree = previousTree.clone();
+							combinedSubtree.addTreeAfter(currentTree);
+							combinedExtractedSubtrees.add(combinedSubtree);
 						}
 
 					}
 
 				}
 			}
-			extractedSubtrees.addAll(combinedExtractedSubtrees);
-			for (String currentTree : extractedChildrenSubtrees
+			// add combined subtrees
+			extractedSubtrees.addAll(this.cloneList(combinedExtractedSubtrees));
+
+			// add current subtrees
+
+			for (Subtree currentTree : extractedChildrenSubtrees
 					.get(childTreesIndex)) {
-				extractedSubtrees.add(currentTree);
+				extractedSubtrees.add(currentTree.clone());
 			}
 		}
 
 		return extractedSubtrees;
 	}
 
-	private ArrayList<ChildNode> sortByPredicate(ArrayList<ChildNode> childNodes) {
+	private List<ChildNode> sortByPredicate(List<ChildNode> childNodes) {
 		Collections.sort(childNodes, new ChildNodeComparator());
 		return childNodes;
 	}
 
-	@SuppressWarnings("unchecked")
-	private List<String> extendSubtreeWithChildNode(
-			ArrayList<String> extractedSubtrees, ChildNode currentChildNode) {
+	private List<Subtree> extendSubtreeWithChildNode(
+			List<Subtree> extractedSubtrees, ChildNode currentChildNode) {
 
-		ArrayList<ChildNode> sortedChildren = (ArrayList<ChildNode>) this
-				.sortByPredicate(currentChildNode.getChildren()).clone();
+		List<ChildNode> sortedChildren = this.sortByPredicate(currentChildNode
+				.getChildren());
 
 		// copy all lower level subtrees and add current child to them
-		ArrayList<String> currentLevelSubtrees = new ArrayList<String>();
+		List<Subtree> currentLevelSubtrees = new ArrayList<Subtree>();
 		if (sortedChildren.size() == 0) {
 			// add predicate and levelSeparator after subtree
-			for (String previousSubtree : extractedSubtrees) {
-				previousSubtree = this.addAfter(previousSubtree,
-						currentChildNode.getPredicate());
+			for (Subtree previousSubtree : extractedSubtrees) {
+				Subtree extendedSubtree = previousSubtree.clone();
+				extendedSubtree.addAfter(currentChildNode.getPredicate());
 
-				previousSubtree = this.addAfter(previousSubtree,
-						this.levelSeparator);
-				currentLevelSubtrees.add(previousSubtree);
+				currentLevelSubtrees.add(extendedSubtree);
 			}
 
 		} else {
 			// go one level deeper
 			for (ChildNode child : sortedChildren) {
 				extractedSubtrees.addAll(this.extendSubtreeWithChildNode(
-						(ArrayList<String>) extractedSubtrees.clone(), child));
+						this.cloneList(extractedSubtrees), child));
 			}
 
 			// add predicate before and levelSeparator after subtree
-			for (String previousSubtree : extractedSubtrees) {
-				previousSubtree = this.addBefore(previousSubtree,
-						currentChildNode.getPredicate());
+			for (Subtree previousSubtree : extractedSubtrees) {
+				Subtree extendedSubtree = previousSubtree.clone();
+				extendedSubtree.addBefore(currentChildNode.getPredicate());
 
-				previousSubtree = this.addAfter(previousSubtree,
-						this.levelSeparator);
-				currentLevelSubtrees.add(previousSubtree);
+				currentLevelSubtrees.add(extendedSubtree);
 			}
 
 		}
 		extractedSubtrees.addAll(currentLevelSubtrees);
 
 		// at new subtree
-		String subtree = this.addAfter("", currentChildNode.getPredicate());
-		subtree = this.addAfter(subtree, this.levelSeparator);
+		Subtree subtree = new Subtree();
+		subtree.addAfter(currentChildNode.getPredicate());
 
 		extractedSubtrees.add(subtree);
 		return extractedSubtrees;
 	}
 
-	private boolean containsRoot(Set<Integer> rootPredicateIds, String tree) {
-		return rootPredicateIds.contains(Integer.parseInt(tree
-				.split(this.itemSeparator)[0]));
-
-	}
-
-	private String addBefore(String subtree, int predicate) {
-		return this.addBefore(subtree, String.valueOf(predicate));
-	}
-
-	private String addBefore(String subtree, String predicate) {
-		if (!subtree.isEmpty()) {
-			subtree = ',' + subtree;
+	private List<Subtree> cloneList(List<Subtree> subtrees) {
+		List<Subtree> clone = new ArrayList<Subtree>();
+		for (Subtree subtree : subtrees) {
+			clone.add(subtree.clone());
 		}
-		subtree = predicate + subtree;
-		return subtree;
-	}
-
-	private String addAfter(String subtree, int predicate) {
-		return this.addAfter(subtree, String.valueOf(predicate));
-	}
-
-	private String addAfter(String subtree, String predicate) {
-		if (!subtree.isEmpty()) {
-			subtree = subtree + ',';
-		}
-		subtree = subtree + predicate;
-		return subtree;
+		return clone;
 	}
 }

@@ -1,12 +1,13 @@
 package de.unikoblenz.west.lda.treeGeneration;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ChildNode implements Node {
 
 	private int name;
 	private int predicate;
-	private ArrayList<ChildNode> children;
+	private List<ChildNode> children;
 
 	// private Rootnode root; //really necessary??
 
@@ -31,15 +32,14 @@ public class ChildNode implements Node {
 		// root.sucSize();
 	}
 
-	// not yet needed
-	public ArrayList<ChildNode> getChildren() {
+	public List<ChildNode> getChildren() {
 		return this.children;
 	}
 
 	// look if subject already exists as an object in children
 	// if found: create and add new ChildNode and add it to insertedNodes
 	public void addIfInside(int subject, int pred, int object,
-			ArrayList<ChildNode> insertedNodes) {
+			List<ChildNode> insertedNodes) {
 		if (this.name == subject) {
 			ChildNode newNode = new ChildNode(object, pred);
 			this.addChild(newNode);
