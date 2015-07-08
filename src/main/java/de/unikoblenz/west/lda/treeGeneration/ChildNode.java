@@ -44,7 +44,6 @@ public class ChildNode implements Node {
 			ChildNode newNode = new ChildNode(object, pred);
 			this.addChild(newNode);
 			insertedNodes.add(newNode);
-			// TODO: fstm.sendSubtree(newNode,root);
 			System.out.println("added new Child " + object + " with predicate "
 					+ pred + " to node " + this.name);
 		}
@@ -53,6 +52,20 @@ public class ChildNode implements Node {
 		}
 	}
 
+	// look if subject already exists as an object in children
+	// if found: create and add new ChildNode; don't add it to insertedNodes to prevent loops
+	public void addIfInside(int subject, int pred, int object) {
+		if (this.name == subject) {
+			ChildNode newNode = new ChildNode(object, pred);
+			this.addChild(newNode);
+			System.out.println("added new Child " + object + " with predicate "
+					+ pred + " to node " + this.name);
+		}
+		for (ChildNode k : this.children) {
+			k.addIfInside(subject, pred, object);
+		}
+	}
+	
 	public void cloneTree(ChildNode clonedTree) {
 		ChildNode newNode;
 		for (ChildNode child : this.children) {

@@ -35,15 +35,15 @@ public class Window {
 		ChildNode newNode;
 		size = 0;
 		while ((line = br.readLine()) != null) {
-			System.out.println("----- line read: " + testcount++ + " -----"); // just
-			// for
-			// output/testing
+			// just for output/testing
+			System.out.println("----- line read: " + testcount++ + " -----");
+			
 			splitRDF = line.split("\\s+");
 			rdfSubject = Integer.parseInt(splitRDF[0]);
 			rdfObject = Integer.parseInt(splitRDF[2]);
 
-			// look through all nodes in all trees if new subject already exists
-			// as an object and add it if found
+			// look through all nodes in all trees if new subject already 
+			// exists as an object and add it if found
 			for (RootNode rootnode : rootNodes) {
 				rootnode.addIfInside(rdfSubject, Integer.parseInt(splitRDF[1]),
 						rdfObject, insertedNodes);
@@ -64,7 +64,6 @@ public class Window {
 						+ " to rootnode " + newRootNode.getName());
 				size = size + 2;
 
-				// TODO: fstm.sendSubtree(newNode, newRootNode)
 			} else {
 				// needs to be tested if size + 1 is close enough to actual size
 				size++;
@@ -83,12 +82,12 @@ public class Window {
 		System.out.println("\ngenerate subtrees:");
 
 		// test printouts for SubtreeExtraction
-		SubtreeExtractor subtreeExtractor = new SubtreeExtractor();
-		List<Subtree> extractedSubtrees = subtreeExtractor
-				.extractSubtrees(newRootNode);
-		for (Subtree subtree : extractedSubtrees) {
-			System.out.println(subtree.toString());
-		}
+//		SubtreeExtractor subtreeExtractor = new SubtreeExtractor();
+//		List<Subtree> extractedSubtrees = subtreeExtractor
+//				.extractSubtrees(newRootNode);
+//		for (Subtree subtree : extractedSubtrees) {
+//			System.out.println(subtree.toString());
+//		}
 
 	}
 
@@ -147,5 +146,4 @@ public class Window {
 			}
 		}
 	}
-
 }

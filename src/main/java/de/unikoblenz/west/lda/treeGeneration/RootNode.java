@@ -54,10 +54,15 @@ public class RootNode implements Node {
 			System.out.println("added new Child " + object + " with predicate "
 					+ pred + " to rootnode " + this.name);
 		}
-
-		for (ChildNode k : this.children) {
-			k.addIfInside(subject, pred, object, insertedNodes);
+		if (this.name == object){
+			for (ChildNode k : this.children) {
+				k.addIfInside(subject, pred, object);
+			}
 		}
+		else
+			for (ChildNode k : this.children) {
+				k.addIfInside(subject, pred, object,insertedNodes);
+			}
 	}
 
 	public void cloneTree(RootNode clonedTree) {
