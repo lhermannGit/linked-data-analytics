@@ -11,6 +11,9 @@ public class SubtreeExtractor {
 	public List<Subtree> extractSubtrees(RootNode rootNode) {
 		List<Subtree> extractedSubtrees = new ArrayList<Subtree>();
 
+		if (rootNode == null) {
+			return extractedSubtrees;
+		}
 		// initialize tree
 		List<ChildNode> sortedChildren = this.sortByPredicate(rootNode
 				.getChildren());
