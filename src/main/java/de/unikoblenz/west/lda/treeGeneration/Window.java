@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 public class Window {
@@ -79,14 +80,14 @@ public class Window {
 		br.close();
 		System.out.println("size = " + size);
 
-		// for (RootNode rootNode : rootNodes) {
-		// System.out.println("\nTree structure:");
-		// TreePrinter.printTree(rootNode);
-		// }
+		for (RootNode rootNode : rootNodes) {
+			System.out.println("\nTree structure:");
+			TreePrinter.printTree(rootNode);
+		}
 
 		System.out.println("\ngenerate subtrees:");
 
-		// BufferedWriter br=new BufferedWriter();
+		LinkedHashSet<String> subtrees = new LinkedHashSet<String>();
 		int numberOfSubtrees = 0;
 		for (RootNode rootNode : rootNodes) {
 			// test printouts for SubtreeExtraction
@@ -94,12 +95,13 @@ public class Window {
 			List<Subtree> extractedSubtrees = subtreeExtractor
 					.extractSubtrees(rootNode);
 			for (Subtree subtree : extractedSubtrees) {
-				System.out.println(subtree.toString());
+				subtrees.add(subtree.toString());
 				numberOfSubtrees += 1;
 			}
 		}
 		System.out.println("Number of Rootnodes: " + rootNodes.size());
-		System.out.println("Number of subtrees: " + numberOfSubtrees);
+		System.out.println("Number of subtrees added: " + numberOfSubtrees);
+		System.out.println("Numbre of unique subtrees: " + subtrees.size());
 
 	}
 
