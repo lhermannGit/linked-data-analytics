@@ -20,15 +20,16 @@ public class Window {
 	 * @param args
 	 * @throws IOException
 	 */
-	public static void main(int[] rdfQuads) throws IOException {
-
+	
+	//public static void main(int[] rdfQuads) throws IOException {
+	public static void main(String[] args) throws IOException {
+		//input looks like [subject,predicate,object,count,......]
 		int[] testArray = new int[] {1,2,3,0, 	1,4,5,0, 	9,3,2,0,
 									 3,1,9,0,	1,9,6,0, 	11,12,13,0,
 									 13,1,14,0, 13,2,15,0,	6,3,2,0,
-									 14,16,2,0,	2,3,11,0};
-		int testCount = 0;
+									 14,16,2,0,	2,3,11,0,	13,3,7,0};
 		
-		int lineCount = 0;
+		int rdfQuadsCount = 0;
 		
 		rootNodes = new ArrayList<RootNode>();
 		List<ChildNode> insertedNodes = new ArrayList<ChildNode>();
@@ -40,17 +41,17 @@ public class Window {
 		RootNode newRootNode = null;
 		ChildNode newNode;
 		size = 0;
-		while (lineCount < testArray.length) {
+		while (rdfQuadsCount < testArray.length) {
 			// just for output/testing
-			System.out.println("----- line read: " + testCount++ + " -----");
+			System.out.println("----- line read: " + rdfQuadsCount/4 + " -----");
 			
-			rdfSubject = testArray[lineCount];
-			rdfObject = testArray[lineCount+2];
+			rdfSubject = testArray[rdfQuadsCount];
+			rdfObject = testArray[rdfQuadsCount + 2];
 
 			// look through all nodes in all trees if new subject already 
 			// exists as an object and add it if found
 			for (RootNode rootnode : rootNodes) {
-				rootnode.addIfInside(rdfSubject, testArray[lineCount+1], rdfObject, insertedNodes, testArray[lineCount+3] );
+				rootnode.addIfInside(rdfSubject, testArray[rdfQuadsCount+1], rdfObject, insertedNodes, testArray[rdfQuadsCount+3] );
 			}
 
 			// if node does not exist yet, create new RootNode and ChildNode and
@@ -58,7 +59,7 @@ public class Window {
 			if (insertedNodes.isEmpty()) {
 				newRootNode = new RootNode(rdfSubject);
 				rootNodes.add(newRootNode);
-				newNode = new ChildNode(rdfObject,testArray[lineCount+1], testArray[lineCount+3]);
+				newNode = new ChildNode(rdfObject,testArray[rdfQuadsCount+1], testArray[rdfQuadsCount+3]);
 				newRootNode.addChild(newNode);
 				insertedNodes.add(newNode);
 				System.out.println("added new Root " + rdfSubject);
@@ -75,7 +76,7 @@ public class Window {
 			combineTrees(rdfObject, insertedNodes);
 
 			insertedNodes.clear();
-			lineCount = lineCount + 4;
+			rdfQuadsCount = rdfQuadsCount + 4;
 		}
 		//br.close();
 		System.out.println("size = " + size);
