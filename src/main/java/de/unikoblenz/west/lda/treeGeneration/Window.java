@@ -79,15 +79,27 @@ public class Window {
 		br.close();
 		System.out.println("size = " + size);
 
+		// for (RootNode rootNode : rootNodes) {
+		// System.out.println("\nTree structure:");
+		// TreePrinter.printTree(rootNode);
+		// }
+
 		System.out.println("\ngenerate subtrees:");
 
-		// test printouts for SubtreeExtraction
-		SubtreeExtractor subtreeExtractor = new SubtreeExtractor();
-		List<Subtree> extractedSubtrees = subtreeExtractor
-				.extractSubtrees(newRootNode);
-		for (Subtree subtree : extractedSubtrees) {
-			System.out.println(subtree.toString());
+		// BufferedWriter br=new BufferedWriter();
+		int numberOfSubtrees = 0;
+		for (RootNode rootNode : rootNodes) {
+			// test printouts for SubtreeExtraction
+			SubtreeExtractor subtreeExtractor = new SubtreeExtractor();
+			List<Subtree> extractedSubtrees = subtreeExtractor
+					.extractSubtrees(rootNode);
+			for (Subtree subtree : extractedSubtrees) {
+				System.out.println(subtree.toString());
+				numberOfSubtrees += 1;
+			}
 		}
+		System.out.println("Number of Rootnodes: " + rootNodes.size());
+		System.out.println("Number of subtrees: " + numberOfSubtrees);
 
 	}
 
