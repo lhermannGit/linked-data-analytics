@@ -12,6 +12,6 @@ interface Node {
 	public void addChild(ChildNode childNode);
 
 	public void addIfInside(int subject, int pred, int object,
-			List<ChildNode> insertedNodes);
+			List<ChildNode> insertedNodes, int rdfCount);
 
 }
