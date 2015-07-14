@@ -45,30 +45,29 @@ public class RootNode implements Node {
 	// look if subject already exists as an object in children
 	// if found: create and add new ChildNode and add it to insertedNodes
 	public void addIfInside(int subject, int pred, int object,
-			List<ChildNode> insertedNodes) {
+			List<ChildNode> insertedNodes, int rdfCount) {
 		if (this.name == subject) {
-			ChildNode newNode = new ChildNode(object, pred);
+			ChildNode newNode = new ChildNode(object, pred, rdfCount);
 			this.addChild(newNode);
 			insertedNodes.add(newNode);
-			// TODO: fstm.sendSubtree(newNode,this);
 			System.out.println("added new Child " + object + " with predicate "
 					+ pred + " to rootnode " + this.name);
 		}
 		if (this.name == object){
 			for (ChildNode k : this.children) {
-				k.addIfInside(subject, pred, object);
+				k.addIfInside(subject, pred, object, rdfCount);
 			}
 		}
 		else
 			for (ChildNode k : this.children) {
-				k.addIfInside(subject, pred, object,insertedNodes);
+				k.addIfInside(subject, pred, object,insertedNodes, rdfCount);
 			}
 	}
 
 	public void cloneTree(RootNode clonedTree) {
 		ChildNode newNode;
 		for (ChildNode child : this.children) {
-			newNode = new ChildNode(child.getName(), child.getPredicate());
+			newNode = new ChildNode(child.getName(), child.getPredicate(), child.getRdfCount());
 			clonedTree.addChild(newNode);
 			child.cloneTree(newNode);
 		}
