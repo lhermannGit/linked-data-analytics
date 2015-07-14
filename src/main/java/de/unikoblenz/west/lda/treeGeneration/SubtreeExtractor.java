@@ -2,8 +2,6 @@ package de.unikoblenz.west.lda.treeGeneration;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 
 /**
@@ -20,56 +18,26 @@ public class SubtreeExtractor {
 		if (rootNode == null) {
 			return extractedSubtrees;
 		}
-		// generate List of LinkedHashSets (so we don't have duplicates but
-		// preserve the order) for every child of the root
 		List<ChildNode> sortedChildren = this.sortByPredicate(rootNode
 				.getChildren());
-		List<LinkedHashSet<Subtree>> extractedChildrenSubtrees = new ArrayList<LinkedHashSet<Subtree>>();
+
 		for (ChildNode child : sortedChildren) {
-			// get children subtrees in separate lists
-			extractedChildrenSubtrees.add(new LinkedHashSet<Subtree>(this
-					.extendSubtreeWithChildNode(
-							this.cloneList(extractedSubtrees), child)));
-		}
-
-		// we need this more complicated check because otherwise we would
-		// aggregate different subtrees which do not have the same root
-		// Remark: every node id should appear not more than once in a tree
-		HashSet<Integer> extractedChildPredicates = new HashSet<Integer>();
-		for (int childTreesIndex = 0; childTreesIndex < extractedChildrenSubtrees
-				.size(); childTreesIndex++) {
-			extractedChildPredicates.add(sortedChildren.get(childTreesIndex)
-					.getPredicate());
-
-			List<Subtree> combinedExtractedSubtrees = new ArrayList<Subtree>();
-			for (Subtree previousTree : extractedSubtrees) {
-				// subtree contains root of original tree
-				if (previousTree.hasRoot(extractedChildPredicates)) {
-
-					// add current subtrees that contain the root to previous
-					// tree that contains the root
-					for (Subtree currentTree : extractedChildrenSubtrees
-							.get(childTreesIndex)) {
-						// subtree contains root of original tree
-						if (currentTree.hasRoot(extractedChildPredicates)) {
-							// create new subtree as combination
-							Subtree combinedSubtree = previousTree.clone();
-							combinedSubtree.addTreeAfter(currentTree);
-							combinedExtractedSubtrees.add(combinedSubtree);
+			List<Subtree> currentSubtrees = this.extendSubtreeWithChildNode(
+					new ArrayList<Subtree>(), child);
+			List<Subtree> combinedSubtrees = new ArrayList<Subtree>();
+			for (Subtree currentSubtree : currentSubtrees) {
+				if (!currentSubtree.wasExtended()) {
+					for (Subtree extractedSubtree : extractedSubtrees) {
+						if (!extractedSubtree.wasExtended()) {
+							Subtree combinedSubtree = extractedSubtree.clone();
+							combinedSubtree.addTreeAfter(currentSubtree);
+							combinedSubtrees.add(combinedSubtree);
 						}
-
 					}
-
 				}
 			}
-			// add combined subtrees
-			extractedSubtrees.addAll(combinedExtractedSubtrees);
-
-			// add current subtrees
-			for (Subtree currentTree : extractedChildrenSubtrees
-					.get(childTreesIndex)) {
-				extractedSubtrees.add(currentTree);
-			}
+			extractedSubtrees.addAll(currentSubtrees);
+			extractedSubtrees.addAll(combinedSubtrees);
 		}
 
 		return extractedSubtrees;
@@ -81,46 +49,42 @@ public class SubtreeExtractor {
 	}
 
 	private List<Subtree> extendSubtreeWithChildNode(
-			List<Subtree> extractedSubtrees, ChildNode currentChildNode) {
+			List<Subtree> extendedSubtrees, ChildNode currentChildNode) {
 
 		List<ChildNode> sortedChildren = this.sortByPredicate(currentChildNode
 				.getChildren());
 
 		// copy all lower level subtrees and add current child to them
+		// go one level deeper
+		for (ChildNode child : sortedChildren) {
+			extendedSubtrees.addAll(this.extendSubtreeWithChildNode(
+					this.cloneList(extendedSubtrees), child));
+		}
+
+		// add predicate to subtrees which have not been extended
 		List<Subtree> currentLevelSubtrees = new ArrayList<Subtree>();
-		if (sortedChildren.size() == 0) {
-			// add predicate and levelSeparator after subtree
-			for (Subtree previousSubtree : extractedSubtrees) {
+		for (Subtree previousSubtree : extendedSubtrees) {
+			if (!previousSubtree.wasExtended()) {
 				Subtree extendedSubtree = previousSubtree.clone();
-				extendedSubtree.addAfter(currentChildNode.getPredicate());
-
-				currentLevelSubtrees.add(extendedSubtree);
-			}
-
-		} else {
-			// go one level deeper
-			for (ChildNode child : sortedChildren) {
-				extractedSubtrees.addAll(this.extendSubtreeWithChildNode(
-						this.cloneList(extractedSubtrees), child));
-			}
-
-			// add predicate before and levelSeparator after subtree
-			for (Subtree previousSubtree : extractedSubtrees) {
-				Subtree extendedSubtree = previousSubtree.clone();
-				extendedSubtree.addBefore(currentChildNode.getPredicate());
+				previousSubtree.setExtended();
+				if (sortedChildren.size() == 0) {
+					extendedSubtree.addAfter(currentChildNode.getPredicate());
+				} else {
+					extendedSubtree.addBefore(currentChildNode.getPredicate());
+				}
 
 				currentLevelSubtrees.add(extendedSubtree);
 			}
 
 		}
-		extractedSubtrees.addAll(currentLevelSubtrees);
+		extendedSubtrees.addAll(currentLevelSubtrees);
 
-		// at new subtree
+		// at new subtree with predicate of current child
 		Subtree subtree = new Subtree();
 		subtree.addAfter(currentChildNode.getPredicate());
 
-		extractedSubtrees.add(subtree);
-		return extractedSubtrees;
+		extendedSubtrees.add(subtree);
+		return extendedSubtrees;
 	}
 
 	private List<Subtree> cloneList(List<Subtree> subtrees) {

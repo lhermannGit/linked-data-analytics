@@ -96,6 +96,7 @@ public class Window {
 					.extractSubtrees(rootNode);
 			for (Subtree subtree : extractedSubtrees) {
 				subtrees.add(subtree.toString());
+				System.out.println(subtree);
 				numberOfSubtrees += 1;
 			}
 		}

@@ -7,13 +7,30 @@ public class Subtree {
 	private final String levelSeparator = "^";
 	private final String itemSeparator = ",";
 	private String subtree;
-
-	public Subtree(String subtreee) {
-		this.subtree = subtreee;
-	}
+	private boolean wasExtended;
 
 	public Subtree() {
 		this.subtree = "";
+		this.wasExtended = false;
+	}
+
+	public Subtree(String subtreee) {
+		this.subtree = subtreee;
+		this.wasExtended = false;
+
+	}
+
+	public Subtree(String subtree, boolean wasExtended) {
+		this.subtree = subtree;
+		this.wasExtended = wasExtended;
+	}
+
+	public boolean wasExtended() {
+		return this.wasExtended;
+	}
+
+	public void setExtended() {
+		this.wasExtended = true;
 	}
 
 	public void addBefore(int integer) {
@@ -61,7 +78,7 @@ public class Subtree {
 
 	@Override
 	public Subtree clone() {
-		return new Subtree(this.subtree);
+		return new Subtree(this.subtree, this.wasExtended);
 
 	}
 
@@ -93,4 +110,5 @@ public class Subtree {
 	public int hashCode() {
 		return this.subtree.hashCode();
 	}
+
 }
