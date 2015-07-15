@@ -3,6 +3,8 @@ package de.unikoblenz.west.lda.treeGeneration;
 import java.util.Arrays;
 import java.util.Set;
 
+import org.apache.commons.lang.ArrayUtils;
+
 public class SubTreeArray {
 
 	// private final String levelSeparator = "^";
@@ -100,7 +102,7 @@ public class SubTreeArray {
 	}
 
 	public void addTreeAfter(SubTreeArray newTree) {
-		// this.subtree = ArrayUtils.addAll(this.subtree, newTree.toString());
+		 this.subtree = ArrayUtils.addAll(this.subtree, newTree.subtree);
 	}
 
 	// /didnt change this part
