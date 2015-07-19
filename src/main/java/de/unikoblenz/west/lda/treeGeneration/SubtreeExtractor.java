@@ -12,6 +12,12 @@ import java.util.List;
  */
 public class SubtreeExtractor {
 
+	private int minimumCount;
+	
+	public SubtreeExtractor(int minimumCount){
+		this.minimumCount=minimumCount;
+	}
+
 	public List<Subtree> extractSubtrees(RootNode rootNode) {
 		List<Subtree> extractedSubtrees = new ArrayList<Subtree>();
 
@@ -61,29 +67,40 @@ public class SubtreeExtractor {
 					this.cloneList(extendedSubtrees), child));
 		}
 
-		// add predicate to subtrees which have not been extended
-		List<Subtree> currentLevelSubtrees = new ArrayList<Subtree>();
-		for (Subtree previousSubtree : extendedSubtrees) {
-			if (!previousSubtree.wasExtended()) {
-				Subtree extendedSubtree = previousSubtree.clone();
-				previousSubtree.setExtended();
-				if (sortedChildren.size() == 0) {
-					extendedSubtree.addAfter(currentChildNode.getPredicate());
-				} else {
-					extendedSubtree.addBefore(currentChildNode.getPredicate());
+		if(currentChildNode.getRdfCount()>=this.minimumCount){
+			// add predicate to subtrees which have not been extended
+			List<Subtree> currentLevelSubtrees = new ArrayList<Subtree>();
+			for (Subtree previousSubtree : extendedSubtrees) {
+				if (!previousSubtree.wasExtended()) {
+					Subtree extendedSubtree = previousSubtree.clone();
+					previousSubtree.setExtended();
+					if (sortedChildren.size() == 0) {
+						extendedSubtree.addAfter(currentChildNode.getPredicate());
+					} else {
+						extendedSubtree.addBefore(currentChildNode.getPredicate());
+					}
+
+					currentLevelSubtrees.add(extendedSubtree);
 				}
 
-				currentLevelSubtrees.add(extendedSubtree);
 			}
+			extendedSubtrees.addAll(currentLevelSubtrees);
 
+			// at new subtree with predicate of current child
+			Subtree subtree = new Subtree();
+			subtree.addAfter(currentChildNode.getPredicate());
+
+			extendedSubtrees.add(subtree);
+		} else {
+			// set all wasExtended in all extendedSubtrees because they
+			// can not be further extended since the count for this
+			// predicate is too low
+			for (Subtree previousSubtree : extendedSubtrees) {
+				if (!previousSubtree.wasExtended()) {
+					previousSubtree.setExtended();
+				}
+			}
 		}
-		extendedSubtrees.addAll(currentLevelSubtrees);
-
-		// at new subtree with predicate of current child
-		Subtree subtree = new Subtree();
-		subtree.addAfter(currentChildNode.getPredicate());
-
-		extendedSubtrees.add(subtree);
 		return extendedSubtrees;
 	}
 

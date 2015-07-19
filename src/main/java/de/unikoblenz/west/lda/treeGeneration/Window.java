@@ -25,10 +25,10 @@ public class Window {
 	//public static void main(int[] rdfQuads) throws IOException {
 	public static void main(String[] args) throws IOException {
 		//input looks like [subject,predicate,object,count,......]
-		int[] testArray = new int[] {1,2,3,0, 	1,4,5,0, 	9,3,2,0,
-									 3,1,9,0,	1,9,6,0, 	11,12,13,0,
-									 13,1,14,0, 13,2,15,0,	6,3,2,0,
-									 14,16,2,0,	2,3,11,0,	13,3,7,0};
+		int[] testArray = new int[] {1,2,3,1, 	1,4,5,1, 	9,3,2,1,
+									 3,1,9,1,	1,9,6,1, 	11,12,13,1,
+									 13,1,14,1, 13,2,15,1,	6,3,2,1,
+									 14,16,2,1,	2,3,11,1,	13,3,7,1};
 		
 		int rdfQuadsCount = 0;
 		
@@ -93,7 +93,7 @@ public class Window {
 		int numberOfSubtrees = 0;
 		for (RootNode rootNode : rootNodes) {
 			// test printouts for SubtreeExtraction
-			SubtreeExtractor subtreeExtractor = new SubtreeExtractor();
+			SubtreeExtractor subtreeExtractor = new SubtreeExtractor(1);
 			List<Subtree> extractedSubtrees = subtreeExtractor
 					.extractSubtrees(rootNode);
 			for (Subtree subtree : extractedSubtrees) {
