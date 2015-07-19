@@ -1,28 +1,30 @@
 package de.unikoblenz.west.lda.treeGeneration;
 
-import java.util.Set;
+import java.util.LinkedList;
 
+/**
+ *	Class for storing subtrees. 
+ *
+ * @author Martin Koerner <info@mkoerner.de>
+ *
+ */
 public class Subtree {
 
-	private final String levelSeparator = "^";
-	private final String itemSeparator = ",";
-	private String subtree;
+	// we use LinkedList due to it's efficiency when adding nodes. Memory 
+	// consumption is not an issue since we work with int array in later steps
+	private LinkedList<Integer> subtreeList;
+	private final int levelSeparator = -1;
 	private boolean wasExtended;
 
 	public Subtree() {
-		this.subtree = "";
+		this.subtreeList = new LinkedList<Integer>();
 		this.wasExtended = false;
 	}
 
-	public Subtree(String subtreee) {
-		this.subtree = subtreee;
+	@SuppressWarnings("unchecked")
+	private Subtree(LinkedList<Integer> subtree) {
+		this.subtreeList = (LinkedList<Integer>)subtree.clone();
 		this.wasExtended = false;
-
-	}
-
-	public Subtree(String subtree, boolean wasExtended) {
-		this.subtree = subtree;
-		this.wasExtended = wasExtended;
 	}
 
 	public boolean wasExtended() {
@@ -33,82 +35,45 @@ public class Subtree {
 		this.wasExtended = true;
 	}
 
-	public void addBefore(int integer) {
-		this.addBefore(String.valueOf(integer));
-	}
-
-	public void addBefore(String string) {
-		if (!this.subtree.isEmpty()) {
-			this.subtree = this.itemSeparator + this.subtree;
+	public int[] toArray(){
+		int[] subtreeArray=new int[subtreeList.size()];
+		for(int index=0;index<subtreeList.size();index++){
+			subtreeArray[index]=subtreeList.get(index);
 		}
-		this.subtree = string + this.subtree;
-		this.addLevelSeparatorAfter();
+		return subtreeArray;
 	}
 
-	public void addAfter(int integer) {
-		this.addAfter(String.valueOf(integer));
+	public void addBefore(int element) {
+		this.subtreeList.add(0, element);
+		this.subtreeList.add(this.levelSeparator);
+	}
+	
+	public void addAfter(int element) {
+		this.subtreeList.add(element);
+		this.subtreeList.add(this.levelSeparator);
 	}
 
-	public void addAfter(String string) {
-		if (!this.subtree.isEmpty()) {
-			this.subtree = this.subtree + this.itemSeparator;
-		}
-		this.subtree = this.subtree + string;
-		this.addLevelSeparatorAfter();
-	}
-
-	private void addLevelSeparatorAfter() {
-		if (!this.subtree.isEmpty()) {
-			this.subtree = this.subtree + this.itemSeparator;
-		}
-
-		this.subtree = this.subtree + this.levelSeparator;
-
-	}
-
-	public boolean hasRoot(Set<Integer> rootPredicateIds) {
-		if (this.subtree.contains(this.itemSeparator)) {
-			return rootPredicateIds.contains(Integer.parseInt(this.subtree
-					.split(this.itemSeparator)[0]));
-		} else {
-			return false;
-		}
-
+	public void addTreeAfter(Subtree subtree) {
+		this.subtreeList.addAll(subtree.subtreeList);
 	}
 
 	@Override
 	public Subtree clone() {
-		return new Subtree(this.subtree, this.wasExtended);
-
+		return new Subtree(this.subtreeList);
 	}
 
 	@Override
 	public String toString() {
-		return this.subtree;
-	}
-
-	public void addTreeAfter(Subtree newTree) {
-		if (!this.subtree.isEmpty()) {
-			this.subtree += this.itemSeparator;
-		}
-		this.subtree += newTree.toString();
+		return this.subtreeList.toString();
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof Subtree)) {
-			return false;
-		}
-		if (obj == this) {
-			return true;
-		}
-
-		return this.toString().equals(obj.toString());
+		return this.subtreeList.equals(obj);
 	}
 
 	@Override
 	public int hashCode() {
-		return this.subtree.hashCode();
+		return this.subtreeList.hashCode();
 	}
-
 }
