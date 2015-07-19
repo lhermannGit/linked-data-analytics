@@ -5,13 +5,11 @@ import java.util.List;
 interface Node {
 
 	public int getName();
-
 	public List<ChildNode> getChildren();
+	public void addChildNode(ChildNode childNode);
+	public void removeChildNode(ChildNode child);
 
-	// public void addNodesToList(int node, List<Node> result);
-	public void addChild(ChildNode childNode);
-
-	public void addIfInside(int subject, int pred, int object,
-			List<ChildNode> insertedNodes, int rdfCount);
+	public boolean addIfInside(ChildNode newChildNode, int rdfSubject, List<ChildNode> preventLoop);
+	
 
 }
