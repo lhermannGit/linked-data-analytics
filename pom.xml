@@ -11,5 +11,15 @@
   		<artifactId>storm-core</artifactId>
   		<version>0.9.3</version>
   	</dependency>
+  	<dependency>
+	<groupId>nz.ac.waikato.cms.weka</groupId>
+	<artifactId>weka-stable</artifactId>
+	<version>3.6.12</version>
+	</dependency>
+  	<dependency>
+	<groupId>mysql</groupId>
+	<artifactId>mysql-connector-java</artifactId>
+	<version>5.1.35</version>
+	</dependency>
   </dependencies>
 </project>
