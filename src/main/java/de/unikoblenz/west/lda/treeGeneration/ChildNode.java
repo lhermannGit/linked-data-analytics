@@ -10,15 +10,12 @@ public class ChildNode implements Node {
 	private int rdfCount;
 	private List<ChildNode> children;
 
-	// private Rootnode root; //really necessary??
-
-	// public ChildNode(int name, int predicate, Rootnode root){
+	
 	public ChildNode(int name, int predicate, int count) {
 		this.name = name;
 		this.predicate = predicate;
 		this.rdfCount = count;
 		this.children = new ArrayList<ChildNode>();
-		// this.root = root;
 	}
 
 	public int getName() {
@@ -32,53 +29,53 @@ public class ChildNode implements Node {
 	public int getRdfCount(){
 		return this.rdfCount;
 	}
-	public void addChild(ChildNode child) {
-		this.children.add(child);
-		// root.sucSize();
+	public void addChildNode(ChildNode childNode) {
+		if (!this.children.contains(childNode)){
+			this.children.add(childNode);
+		}
 	}
 
 	public List<ChildNode> getChildren() {
 		return this.children;
 	}
-
-	// look if subject already exists as an object in children
-	// if found: create and add new ChildNode and add it to insertedNodes
-	public void addIfInside(int subject, int pred, int object,
-			List<ChildNode> insertedNodes, int rdfCount) {
-		if (this.name == subject) {
-			ChildNode newNode = new ChildNode(object, pred, rdfCount);
-			this.addChild(newNode);
-			insertedNodes.add(newNode);
-			System.out.println("added new Child " + object + " with predicate "
-					+ pred + " to node " + this.name);
-		}
-		for (ChildNode k : this.children) {
-			k.addIfInside(subject, pred, object, insertedNodes, rdfCount);
-		}
-	}
-
-	// look if subject already exists as an object in children
-	// if found: create and add new ChildNode; don't add it to insertedNodes to prevent loops
-	public void addIfInside(int subject, int pred, int object, int rdfCount) {
-		if (this.name == subject) {
-			ChildNode newNode = new ChildNode(object, pred,rdfCount);
-			this.addChild(newNode);
-			System.out.println("added new Child " + object + " with predicate "
-					+ pred + " to node " + this.name);
-		}
-		for (ChildNode k : this.children) {
-			k.addIfInside(subject, pred, object, rdfCount);
-		}
-	}
 	
-	public void cloneTree(ChildNode clonedTree) {
-		ChildNode newNode;
-		for (ChildNode child : this.children) {
-			newNode = new ChildNode(child.getName(), child.getPredicate(), child.getRdfCount());
-			clonedTree.addChild(newNode);
-			child.cloneTree(newNode);
-		}
-
-		System.out.println("cloned Childnode " + this.name);
+	public void removeChildNode(ChildNode childNode){
+		this.children.remove(childNode);
 	}
+
+	// look if subject already exists as an object in children
+	// if found: create and add new ChildNode
+	public boolean addIfInside(ChildNode newChildNode, int rdfSubject){
+		boolean inserted = false;
+		if (this.name == rdfSubject) {
+			this.addChildNode(newChildNode);
+			inserted = true;
+			System.out.println("added new Child " + newChildNode.getName() + " with predicate "
+					+ newChildNode.getPredicate() + " to ChildNode " + this.name);
+		}
+		for (ChildNode child : this.children) {
+			if ((!inserted) & (child.addIfInside(newChildNode, rdfSubject))){
+				inserted = true;
+			}
+		}
+		return inserted;
+	}
+
+	// look if subject already exists as an object in children
+	// if found:add newChildNode as a child and add 'this' to preventLoop
+	public boolean addIfInside(ChildNode newChildNode, int rdfSubject, List<ChildNode> preventLoop){
+		boolean inserted = false;
+		if (this.name == rdfSubject) {
+			this.addChildNode(newChildNode);
+			preventLoop.add(this);
+			System.out.println("added new Child " + newChildNode.getName() + " with predicate "
+					+ newChildNode.getPredicate() + " to ChildNode " + this.name);
+		}
+		for (ChildNode child : this.children) {
+			if ((!inserted) & (child.addIfInside(newChildNode, rdfSubject, preventLoop))){
+				inserted = true;
+			}
+		}
+		return inserted;
+	}	
 }
