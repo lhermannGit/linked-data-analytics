@@ -3,6 +3,7 @@ package de.unikoblenz.west.lda.input;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import de.unikoblenz.west.lda.input.util.CharArrHashingStrategy;
 import gnu.trove.iterator.TObjectIntIterator;
 import gnu.trove.map.custom_hash.TObjectIntCustomHashMap;
 import simplemysql.SimpleMySQL;

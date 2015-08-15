@@ -1,4 +1,4 @@
-package de.unikoblenz.west.lda.input;
+package de.unikoblenz.west.lda.input.util;
 
 import gnu.trove.strategy.HashingStrategy;
 
