@@ -1,6 +1,7 @@
 package de.unikoblenz.west.lda.treeGeneration;
 
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  *	Class for storing subtrees. 
@@ -43,6 +44,10 @@ public class Subtree {
 		return subtreeArray;
 	}
 
+	public List<Integer> toList(){
+		return this.subtreeList;
+	}
+
 	public void addBefore(int element) {
 		this.subtreeList.add(0, element);
 		this.subtreeList.add(this.levelSeparator);
@@ -59,7 +64,7 @@ public class Subtree {
 
 	@Override
 	public Subtree clone() {
-		return new Subtree(this.subtreeList);
+        return new Subtree(this.subtreeList);
 	}
 
 	@Override
@@ -69,7 +74,11 @@ public class Subtree {
 
 	@Override
 	public boolean equals(Object obj) {
-		return this.subtreeList.equals(obj);
+		if (obj.getClass() == Subtree.class) {
+			return this.subtreeList.equals(((Subtree)obj).toList());
+		}else{
+			return false;
+		}
 	}
 
 	@Override

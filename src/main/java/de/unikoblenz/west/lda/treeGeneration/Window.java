@@ -11,9 +11,9 @@ import java.util.List;
 public class Window {
 	public static final int WINDOW_SIZE = 100;
 
-	private static int size;
-	private static List<RootNode> rootNodes;
-	private static Iterator<RootNode> rootNodesIterator;
+	private int size;
+	private List<RootNode> rootNodes;
+	private Iterator<RootNode> rootNodesIterator;
 
 	/**
 	 * Arguments: Path to input file
@@ -31,10 +31,20 @@ public class Window {
 //									 3,1,9,1,	1,9,6,1, 	11,12,13,1,
 //									 13,1,14,1, 13,2,15,1,	6,3,2,1,
 //									 14,16,2,1,	2,3,11,1,	13,3,7,1};
-		int[] testArray = new int[] {1,0,3,0,	11,0,5,0,	9,0,2,0,
-									 3,0,9,0,	1,0,6,0,	11,0,13,0,
-									 13,0,14,0,	13,0,15,0,	6,0,2,0,
-									 14,0,2,0,	2,0,11,0,	13,0,7,0};
+		int[] testArray = new int[] {1,0,3,1,	11,0,5,1,	9,0,2,1,
+									 3,0,9,1,	1,0,6,1,	11,0,13,1,
+									 13,0,14,1,	13,0,15,1,	6,0,2,1,
+									 14,0,2,1,	2,0,11,1,	13,0,7,1};
+		Window window=new Window();
+		List<RootNode>rootNodes=window.buildTree(testArray);
+		for (RootNode rootNode : rootNodes) {
+			System.out.println("\nTree structure:");
+			TreePrinter.printTree(rootNode);
+			List<int[]>subtrees=window.extractSubtrees(rootNode);
+			System.out.println("Size of list: "+subtrees.size());
+		}
+	}
+	public List<RootNode> buildTree(int[] inputArray){
 		
 		int rdfQuadsCount = 0;
 		
@@ -46,15 +56,15 @@ public class Window {
 		RootNode newRootNode = null;
 		ChildNode newChildNode = null;
 		size = 0;
-		while (rdfQuadsCount < testArray.length) {
+		while (rdfQuadsCount < inputArray.length) {
 			// just for output/testing
 			System.out.println("----- line read: " + rdfQuadsCount/4 + " -----");
 
-			rdfSubject = testArray[rdfQuadsCount];
-			rdfObject = testArray[rdfQuadsCount + 2];
+			rdfSubject = inputArray[rdfQuadsCount];
+			rdfObject = inputArray[rdfQuadsCount + 2];
 			
-			newChildNode = new ChildNode(rdfObject, testArray[rdfQuadsCount+1], 
-										testArray[rdfQuadsCount+3]);
+			newChildNode = new ChildNode(rdfObject, inputArray[rdfQuadsCount+1], 
+										inputArray[rdfQuadsCount+3]);
 			// look through all nodes in all trees if new subject already 
 			// exists as an object and if found, add newChildNode there
 			for (RootNode rootnode : rootNodes) {
@@ -91,35 +101,37 @@ public class Window {
 		//br.close();
 		System.out.println("size = " + size);
 
-		for (RootNode rootNode : rootNodes) {
-			System.out.println("\nTree structure:");
-			TreePrinter.printTree(rootNode);
-		}
-
-		System.out.println("\ngenerate subtrees:");
-
-		LinkedHashSet<String> subtrees = new LinkedHashSet<String>();
-		int numberOfSubtrees = 0;
-		for (RootNode rootNode : rootNodes) {
-			// test printouts for SubtreeExtraction
-			SubtreeExtractor subtreeExtractor = new SubtreeExtractor(1);
-			List<Subtree> extractedSubtrees = subtreeExtractor
-					.extractSubtrees(rootNode);
-			for (Subtree subtree : extractedSubtrees) {
-				subtrees.add(subtree.toString());
-				System.out.println(subtree);
-				numberOfSubtrees += 1;
-			}
-		}
-		System.out.println("Number of Rootnodes: " + rootNodes.size());
-		System.out.println("Number of subtrees added: " + numberOfSubtrees);
-		System.out.println("Numbre of unique subtrees: " + subtrees.size());
-
+		return this.rootNodes;
 	}
 
+	public List<int[]> extractSubtrees(RootNode rootNode){
+		System.out.println("\ngenerate subtrees:");
+
+		LinkedHashSet<Subtree> subtrees = new LinkedHashSet<Subtree>();
+		int numberOfSubtrees = 0;
+
+		// test printouts for SubtreeExtraction
+		SubtreeExtractor subtreeExtractor = new SubtreeExtractor(1);
+		List<Subtree> extractedSubtrees = subtreeExtractor
+				.extractSubtrees(rootNode);
+		for (Subtree subtree : extractedSubtrees) {
+			subtrees.add(subtree);
+			numberOfSubtrees += 1;
+		}
+		System.out.println("Number of subtrees added: " + numberOfSubtrees);
+		System.out.println("Number of unique subtrees: " + subtrees.size());
+		
+		
+		List<int[]>subtreesAsArray=new ArrayList<int[]>();
+		for(Subtree subtree:subtrees){
+			subtreesAsArray.add(subtree.toArray());
+		}
+		return subtreesAsArray;
+	
+	}
 	
 	// combine a tree with added Nodes if needed
-	public static void combineTrees(ChildNode newChildNode, int rdfObject, 
+	public void combineTrees(ChildNode newChildNode, int rdfObject, 
 									List<ChildNode> preventLoop) {
 		RootNode root;
 		rootNodesIterator = rootNodes.iterator();
