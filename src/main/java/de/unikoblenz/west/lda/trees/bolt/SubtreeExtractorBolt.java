@@ -37,7 +37,8 @@ public class SubtreeExtractorBolt extends BaseRichBolt {
 	public void execute(Tuple tuple) {
 		Object rootNodeObject=tuple.getValue(0);
 		if(rootNodeObject.getClass()!=RootNode.class){
-			Log.error("tuple does not contain RootNode");
+			//TODO: better error handling
+			System.out.println("tuple does not contain array");
 			this.collector.ack(tuple);
 			return;
 		}
@@ -47,7 +48,7 @@ public class SubtreeExtractorBolt extends BaseRichBolt {
 		Window window=new Window();
 		System.out.println("\nTree structure:");
 		List<int[]>subtrees=window.extractSubtrees(rootNode);
-		//this.collector.emit(tuple, new Values(subtrees));
+		this.collector.emit(tuple, new Values(subtrees));
 		System.out.println("Size of list: "+subtrees.size());
 
 		this.collector.ack(tuple);
