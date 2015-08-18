@@ -30,6 +30,8 @@ public class RootNode implements Node {
 	public void addChildNode(ChildNode childNode) {
 		if (!this.children.contains(childNode)){
 			this.children.add(childNode);
+			System.out.println("added new Child " + childNode.getName() + " with predicate "
+				+ childNode.getPredicate() + " to rootnode " + this.name);			
 		}
 	}
 	
@@ -45,8 +47,6 @@ public class RootNode implements Node {
 		if (this.name == rdfSubject) {
 			this.addChildNode(newChildNode);
 			inserted = true;
-			System.out.println("added new Child " + newChildNode.getName() + " with predicate "
-					+ newChildNode.getPredicate() + " to rootnode " + this.name);			
 		}
 		if (this.name == newChildNode.getName()){			
 			//if newChildNode is added in this tree, parent ChildNode needs to 
