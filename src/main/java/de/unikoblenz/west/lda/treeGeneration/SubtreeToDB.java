@@ -29,7 +29,7 @@ public class SubtreeToDB {
 		mysql.connect(DB_URL_Simple,USER, PASS, DB_NAME); 
 		
 		//create two tables (one with RDF triples another with existent pairs)
-		CreatTables(mysql,"rdf_triple","tree_pair");
+		CreatTables(mysql,"rdf_triple","tree_pair","subtree_structure");
 		
 		
 		
@@ -42,6 +42,7 @@ public class SubtreeToDB {
 		PrintSelected(mysql, "Subject", 9);
 		DelTable(mysql,"tree_pair2");
 		DelTable(mysql,"rdf_triple2");
+		AddSubtreeStructure(mysql,99,"1,2,^,3.","subtree_structure");
 		//========================================
 		
 		
@@ -72,6 +73,15 @@ public class SubtreeToDB {
 		mysql.Query (SqlString);
 	}
 
+	public static void AddSubtreeStructure(SimpleMySQL mysql,int treeID, String graphString, String TableName) {
+		
+		String SqlString="INSERT INTO "+TableName+" (SubtreeID, Structure) VALUES("+treeID+",'"+graphString+"')";
+		System.out.println(SqlString);
+		mysql.Query (SqlString);
+	}
+	
+	
+	
 	public static void DelTriple(SimpleMySQL mysql, int id) {
 		//delete from table tree_pair firstly and then from pair table
 		DelPair(mysql,id);
@@ -125,7 +135,8 @@ public class SubtreeToDB {
 	}
 	
 
-	public static void CreatTables(SimpleMySQL mysql,String TableName1, String TableName2) {
+	public static void CreatTables(SimpleMySQL mysql,String TableName1, String TableName2,
+			String TableName3) {
 		String SqlString;
 		if  ( !CheckIfExist(mysql, TableName1)){
 			SqlString="CREATE TABLE "+TableName1+" "
@@ -160,6 +171,16 @@ public class SubtreeToDB {
 			System.out.println("Table "+TableName2+" is created!");
 			}
 		else {System.out.println("You tried to creat table "+TableName2+" that already exist.");}
+		
+		if  ( !CheckIfExist(mysql, TableName3)){
+			SqlString="CREATE TABLE "+TableName3+" "
+					+ "(SubtreeID INT NOT NULL,"
+					+ " Structure VARCHAR(255) NOT NULL,"
+					+ "  PRIMARY KEY (SubtreeID) );";
+			mysql.Query (SqlString);
+			System.out.println("Table "+TableName3+" is created!");
+			}
+		else {System.out.println("You tried to creat table "+TableName3+" that already exist.");}
 	}
 	
 	
