@@ -28,21 +28,57 @@ public class SubtreeToDB {
 		//Connect to the Database 
 		mysql.connect(DB_URL_Simple,USER, PASS, DB_NAME); 
 		
-		//create two tables (one with RDF triples another with existent pairs)
+		//create two tables (one with RDF triples another with graph structure)
 		CreatTables(mysql,"rdf_triple","tree_pair","subtree_structure");
+		
+		
+		/*steps for adding data into DB:[read: array=List]
+		 * 1. add all triples of the tree : 
+		 * 		-for one triple then: function storeTripleToDB(mysql, subj, pred, obj) 
+		 * 			1) function AddTriple(mysql, subj, pred, obj);
+		 * 			2) return ID of this triple
+		 *  
+		 * - form Subtree Array from this IDs [then did the same as with predicate ]
+		 * [ 2nd variant : store IDs into int array]
+		 * 
+		 * 2. add data to table subtree_structure :
+		 * 		1) use IDs (of recently added triples) we need it to fill field Structure (i.e. variable val1):
+		 * 				- get Subtree Array
+		 * 				- convert array to String (val1)
+		 * 		2) use predicates (of recently added triples) we need it to fill field StructurePred (i.e. variable val2)
+		 * 				- get Subtree Array
+		 * 				- convert Array to String (val2)
+		 * 		3) add data into table : function AddSubtreeStructure(mysql, val1, val2, "subtree_structure");
+		 */
+		
+		//Example: function store triple "998 7 3" to DB and return ID of this triple 
+		//PARAMETERs: SimpleMySQL object, subject,predicate, object
+		System.out.println("====ID :"+storeTripleToDB(mysql,998, 7, 3));
+		
+		//Example:this function store tree of IDs and tree of predicates into DB
+		//PARAMETERs: SimpleMySQL object, String_tree_of_IDs, String_tree_of_predicates,  name_of_table
+		AddSubtreeStructure(mysql,"1,2,^,3.","[1,2,^,3.]","subtree_structure");
+		
+		
+		
+		/*steps for retrieving data from DB:
+		 * 1. find all rows from subtree_structure where StructurePred is particular value:
+		 * 		1) convert array to string
+		 * 		2) SQL query SELECT
+		 * 2. find add all triples from table rdf_triple :
+		 * 		1)	convert string with IDS into array
+		 * 		2) 	if value != -1 then SQL query select
+		 * 		3) return all triples
+		 */
 		
 		
 		
 		///==========test area ======
 		//PrintAll(mysql);
 		AddTriple(mysql, 9, 21, 3);
-		AddPair(mysql, 1, 1);
 		//DelTriple(mysql, 127);
 		//PrintAll(mysql);
-		PrintSelected(mysql, "Subject", 9);
-		DelTable(mysql,"tree_pair2");
 		DelTable(mysql,"rdf_triple2");
-		AddSubtreeStructure(mysql,99,"1,2,^,3.","subtree_structure");
 		//========================================
 		
 		
@@ -52,34 +88,47 @@ public class SubtreeToDB {
 	}
 	
 	
-	public static void AddTriple(SimpleMySQL mysql,int pred, int subj, int obj) {
-		AddTriple(mysql, pred, subj, obj, "rdf_triple");
+	public static void AddTriple(SimpleMySQL mysql, int subj, int pred, int obj) {
+		AddTriple(mysql, subj, pred, obj, "rdf_triple");
 	}	
 	
-	public static void AddTriple(SimpleMySQL mysql,int pred, int subj, int obj, String TableName) {
-		//
+	public static void AddTriple(SimpleMySQL mysql, int subj, int pred, int obj, String TableName) {
+		//TODO: check if this triple exist then skip SQL query 
+		
 		String SqlString="INSERT INTO "+TableName+" (TripleID, Predicate, Subject, Object) VALUES(null,"+pred+","+subj+","+obj+");";
 		mysql.Query(SqlString);		
 	}
 	
+	public static int storeTripleToDB(SimpleMySQL mysql, int subj, int pred,  int obj) {
+		int ID;
+		AddTriple(mysql, subj, pred,  obj, "rdf_triple");
+		ID=getID(mysql, subj, pred, obj, "rdf_triple");
+		return ID;
+	}
+	
+	public static int getID(SimpleMySQL mysql,int subj, int pred,  int obj, String TableName) {
+		return PrintSelected( mysql, subj, pred, obj);
+	}
+	
+	
+	//====================================this function is not used anymore
 	public static void AddPair(SimpleMySQL mysql,int id1, int id2) {
 		AddPair(mysql, id1, id2, "tree_pair");
 	}
-	
+	//====================================this function is not used anymore
 	public static void AddPair(SimpleMySQL mysql,int id1, int id2, String TableName) {
-	
+		
 		String SqlString="INSERT INTO "+TableName+" (TripleID1, TripleID2) VALUES("+id1+","+id2+")";
 		System.out.println(SqlString);
 		mysql.Query (SqlString);
 	}
+	
 
-	public static void AddSubtreeStructure(SimpleMySQL mysql,int treeID, String graphString, String TableName) {
-		
-		String SqlString="INSERT INTO "+TableName+" (SubtreeID, Structure) VALUES("+treeID+",'"+graphString+"')";
+	public static void AddSubtreeStructure(SimpleMySQL mysql, String graphString,String PredicateArray, String TableName) {	
+		String SqlString="INSERT INTO "+TableName+" ( Structure, StructurePred) VALUES('"+graphString+"','"+PredicateArray+"')";
 		System.out.println(SqlString);
 		mysql.Query (SqlString);
 	}
-	
 	
 	
 	public static void DelTriple(SimpleMySQL mysql, int id) {
@@ -115,23 +164,26 @@ public class SubtreeToDB {
 			x.printStackTrace();}	
 	}
 	
-	public static void PrintSelected(SimpleMySQL mysql, String field, int val) {
-		
+	public static int PrintSelected(SimpleMySQL mysql, int subj, int pred, int obj) {
+		int id = -20;
 		///print values with particular value from the table rdf_triple
 		//Do a SELECT Query
 		SimpleMySQLResult result;
 		
-		String SqlString="SELECT * FROM rdf_triple WHERE "+field+"="+val+";";
+		String SqlString="SELECT * FROM rdf_triple WHERE (Predicate="+pred+" AND Subject="+subj+" AND Object="+obj+" );";
 		result = mysql.Query (SqlString); 
 		
 		//Print all of the Results
 		try{
 			while (result.next()){
-				System.out.println("Predicate:"+result.getString("Predicate"));}
+				//System.out.println("Predicate:"+result.getString("Predicate"));
+				id=Integer.parseInt(result.getString("TripleID"));
+				}
 			result.close();
 		}
 		catch(Exception x) {
-			x.printStackTrace();}	
+			x.printStackTrace();}
+		return id;	
 	}
 	
 
@@ -174,8 +226,9 @@ public class SubtreeToDB {
 		
 		if  ( !CheckIfExist(mysql, TableName3)){
 			SqlString="CREATE TABLE "+TableName3+" "
-					+ "(SubtreeID INT NOT NULL,"
+					+ "(SubtreeID INT NOT NULL AUTO_INCREMENT, "
 					+ " Structure VARCHAR(255) NOT NULL,"
+					+ " StructurePred VARCHAR(255) NOT NULL,"
 					+ "  PRIMARY KEY (SubtreeID) );";
 			mysql.Query (SqlString);
 			System.out.println("Table "+TableName3+" is created!");
