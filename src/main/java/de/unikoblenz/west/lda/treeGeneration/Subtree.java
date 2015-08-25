@@ -43,6 +43,23 @@ public class Subtree {
 		}
 		return subtreeArray;
 	}
+	
+	/**
+	 * Reads a String representation of an array and create a subtree based on it.
+	 * Format of the String: "3,2,1,-1,-1,-1,4,-1"
+	 * 
+	 * @param subtreeAsString
+	 */
+	public void readString(String subtreeAsString){
+		this.subtreeList=new LinkedList<Integer>();
+		if(subtreeAsString.length()<2){
+			return;
+		}
+		String[] subtreeAsStringSplit=subtreeAsString.split(",");
+		for(String subtreeAsStringElement:subtreeAsStringSplit){
+			subtreeList.add(Integer.parseInt(subtreeAsStringElement));
+		}
+	}
 
 	public List<Integer> toList(){
 		return this.subtreeList;
@@ -69,7 +86,14 @@ public class Subtree {
 
 	@Override
 	public String toString() {
-		return this.subtreeList.toString();
+		String subtreeAsString="";
+		for(int subtreeElement:subtreeList){
+            if(subtreeAsString.length()>0)			{
+                subtreeAsString+=",";
+            }
+            subtreeAsString+=subtreeElement;
+		}
+		return subtreeAsString;
 	}
 
 	@Override
