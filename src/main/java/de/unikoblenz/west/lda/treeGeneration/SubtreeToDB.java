@@ -144,7 +144,7 @@ public class SubtreeToDB {
 	public void AddPair(int id1, int id2, String TableName) {
 		
 		String SqlString="INSERT INTO "+TableName+" (TripleID1, TripleID2) VALUES("+id1+","+id2+")";
-		System.out.println(SqlString);
+		//System.out.println(SqlString);
 		mysql.Query (SqlString);
 	}
 	
@@ -152,7 +152,7 @@ public class SubtreeToDB {
 	public void AddSubtreeStructure( String graphString, String PredicateArray) {	
 		String TableName="subtree_structure"
 		String SqlString="INSERT INTO "+TableName+" ( Structure, StructurePred) VALUES('"+graphString+"','"+PredicateArray+"')";
-		System.out.println(SqlString);
+		//System.out.println(SqlString);
 		mysql.Query (SqlString);
 	}
 	
