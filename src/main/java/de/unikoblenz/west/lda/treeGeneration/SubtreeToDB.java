@@ -27,22 +27,28 @@ import simplemysql.SimpleMySQLResult;
  * 		2) use predicates (of recently added triples) we need it to fill field StructurePred (i.e. variable val2)
  * 				- get Subtree Array
  * 				- convert Array to String (val2)
- * 		3) add data into table : function AddSubtreeStructure(mysql, val1, val2, "subtree_structure");
+ * 		3) add data into table : function AddSubtreeStructure( val1, val2);
  */
 
 
 //Example: function store triple "998 7 3" to DB and return ID of this triple 
-//PARAMETERs: SimpleMySQL object, subject,predicate, object
+//PARAMETERs:  subject,predicate, object
 //
 //SubtreeToDB x=new SubtreeToDB();
 //System.out.println("====ID :"+x.storeTripleToDB(2, 2, 2));   
 
 //Example:this function store tree of IDs and tree of predicates into DB
-//PARAMETERs: SimpleMySQL object, String_tree_of_IDs, String_tree_of_predicates,  name_of_table
+//PARAMETERs: String_tree_of_IDs, String_tree_of_predicates
 //
 //SubtreeToDB x=new SubtreeToDB();
-//x.AddSubtreeStructure("1,2,^,3","1,2,^,3","subtree_structure");
+//x.AddSubtreeStructure("1,2,3","1,2,^,3");
 
+//x.close();
+
+
+//SubtreeExtractor line 115 [up to 25.08.2015 14:45]:
+//SubtreeToDB x=new SubtreeToDB();
+//String result=x.storeTripleToDB(subject, predicate, object);
 //x.close();
 
 
@@ -56,8 +62,10 @@ import simplemysql.SimpleMySQLResult;
  * 		3) return all triples
  */
 
-
-
+/*
+ * 
+ * 
+ */
 
 public class SubtreeToDB {
 	// JDBC driver name and database URL
@@ -141,7 +149,8 @@ public class SubtreeToDB {
 	}
 	
 
-	public void AddSubtreeStructure( String graphString,String PredicateArray, String TableName) {	
+	public void AddSubtreeStructure( String graphString, String PredicateArray) {	
+		String TableName="subtree_structure"
 		String SqlString="INSERT INTO "+TableName+" ( Structure, StructurePred) VALUES('"+graphString+"','"+PredicateArray+"')";
 		System.out.println(SqlString);
 		mysql.Query (SqlString);
