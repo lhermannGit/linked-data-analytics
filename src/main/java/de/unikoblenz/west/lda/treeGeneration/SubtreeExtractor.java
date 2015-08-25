@@ -29,7 +29,7 @@ public class SubtreeExtractor {
 
 		for (ChildNode child : sortedChildren) {
 			List<Subtree> currentSubtrees = this.extendSubtreeWithChildNode(
-					new ArrayList<Subtree>(), child);
+					new ArrayList<Subtree>(), child,rootNode.getName());
 			List<Subtree> combinedSubtrees = new ArrayList<Subtree>();
 			for (Subtree currentSubtree : currentSubtrees) {
 				if (!currentSubtree.wasExtended()) {
@@ -55,7 +55,7 @@ public class SubtreeExtractor {
 	}
 
 	private List<Subtree> extendSubtreeWithChildNode(
-			List<Subtree> extendedSubtrees, ChildNode currentChildNode) {
+			List<Subtree> extendedSubtrees, ChildNode currentChildNode,int parentName) {
 
 		List<ChildNode> sortedChildren = this.sortByPredicate(currentChildNode
 				.getChildren());
@@ -64,7 +64,7 @@ public class SubtreeExtractor {
 		// go one level deeper
 		for (ChildNode child : sortedChildren) {
 			extendedSubtrees.addAll(this.extendSubtreeWithChildNode(
-					this.cloneList(extendedSubtrees), child));
+					this.cloneList(extendedSubtrees), child, currentChildNode.getName()));
 		}
 
 		if(currentChildNode.getRdfCount()>=this.minimumCount){
@@ -74,10 +74,13 @@ public class SubtreeExtractor {
 				if (!previousSubtree.wasExtended()) {
 					Subtree extendedSubtree = previousSubtree.clone();
 					previousSubtree.setExtended();
+					//get tripleID
+					String tripleID=this.getTripleID(parentName, currentChildNode.getPredicate(),currentChildNode.getName());
+					System.out.println("test:"+tripleID);
 					if (sortedChildren.size() == 0) {
-						extendedSubtree.addAfter(currentChildNode.getPredicate());
+						extendedSubtree.addAfter(currentChildNode.getPredicate(),tripleID);
 					} else {
-						extendedSubtree.addBefore(currentChildNode.getPredicate());
+						extendedSubtree.addBefore(currentChildNode.getPredicate(),tripleID);
 					}
 
 					currentLevelSubtrees.add(extendedSubtree);
@@ -88,7 +91,10 @@ public class SubtreeExtractor {
 
 			// at new subtree with predicate of current child
 			Subtree subtree = new Subtree();
-			subtree.addAfter(currentChildNode.getPredicate());
+
+			String tripleID=this.getTripleID(parentName, currentChildNode.getPredicate(),currentChildNode.getName());
+			System.out.println("test2:"+tripleID);
+			subtree.addAfter(currentChildNode.getPredicate(),tripleID);
 
 			extendedSubtrees.add(subtree);
 		} else {
@@ -102,6 +108,12 @@ public class SubtreeExtractor {
 			}
 		}
 		return extendedSubtrees;
+	}
+
+	private String getTripleID(int subject, int predicate, int object) {
+		//TODO: check local list if triple was already added and if not, call mysql function and store triple ID in local list
+		String result=subject+"-"+predicate+"-"+object;
+		return result;
 	}
 
 	private List<Subtree> cloneList(List<Subtree> subtrees) {

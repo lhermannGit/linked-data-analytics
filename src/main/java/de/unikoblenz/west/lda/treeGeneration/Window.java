@@ -31,16 +31,24 @@ public class Window {
 //									 3,1,9,1,	1,9,6,1, 	11,12,13,1,
 //									 13,1,14,1, 13,2,15,1,	6,3,2,1,
 //									 14,16,2,1,	2,3,11,1,	13,3,7,1};
-		int[] testArray = new int[] {1,0,3,1,	11,0,5,1,	9,0,2,1,
-									 3,0,9,1,	1,0,6,1,	11,0,13,1,
-									 13,0,14,1,	13,0,15,1,	6,0,2,1,
-									 14,0,2,1,	2,0,11,1,	13,0,7,1};
+		int[] testArray = new int[] {1,99,3,1,	11,98,5,1,	9,97,2,1,
+									 3,96,9,1,	1,95,6,1,	11,94,13,1,
+									 13,93,14,1,13,92,15,1,	6,91,2,1,
+									 14,90,2,1,	2,89,11,1,	13,87,7,1};
+//		int[] testArray = new int[] {1,99,3,1,	3,98,5,1,	5,97,6,1,
+//									 3,96,8,1	};
+
 		Window window=new Window();
 		List<RootNode>rootNodes=window.buildTree(testArray);
 		for (RootNode rootNode : rootNodes) {
 			System.out.println("\nTree structure:");
 			TreePrinter.printTree(rootNode);
-			List<int[]>subtrees=window.extractSubtrees(rootNode);
+			List<Subtree>subtrees=window.extractSubtrees(rootNode);
+			for(Subtree subtree:subtrees){
+				System.out.println("-----");
+				System.out.println(subtree);	
+				System.out.println(subtree.tripleIDsToString());
+			}
 			System.out.println("Size of list: "+subtrees.size());
 		}
 	}
@@ -104,7 +112,7 @@ public class Window {
 		return this.rootNodes;
 	}
 
-	public List<int[]> extractSubtrees(RootNode rootNode){
+	public List<Subtree> extractSubtrees(RootNode rootNode){
 		System.out.println("\ngenerate subtrees:");
 
 		LinkedHashSet<Subtree> subtrees = new LinkedHashSet<Subtree>();
@@ -116,17 +124,16 @@ public class Window {
 				.extractSubtrees(rootNode);
 		for (Subtree subtree : extractedSubtrees) {
 			subtrees.add(subtree);
+			//System.out.println(subtree.toString());
 			numberOfSubtrees += 1;
 		}
 		System.out.println("Number of subtrees added: " + numberOfSubtrees);
 		System.out.println("Number of unique subtrees: " + subtrees.size());
 		
 		
-		List<int[]>subtreesAsArray=new ArrayList<int[]>();
-		for(Subtree subtree:subtrees){
-			subtreesAsArray.add(subtree.toArray());
-		}
-		return subtreesAsArray;
+		List<Subtree>subtreesList=new ArrayList<Subtree>();
+		subtreesList.addAll(subtrees);
+		return subtreesList;
 	
 	}
 	

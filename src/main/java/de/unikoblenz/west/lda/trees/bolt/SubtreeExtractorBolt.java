@@ -14,6 +14,7 @@ import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
 import de.unikoblenz.west.lda.treeGeneration.RootNode;
+import de.unikoblenz.west.lda.treeGeneration.Subtree;
 import de.unikoblenz.west.lda.treeGeneration.Window;
 import jline.internal.Log;
 
@@ -47,7 +48,7 @@ public class SubtreeExtractorBolt extends BaseRichBolt {
 
 		Window window=new Window();
 		System.out.println("\nTree structure:");
-		List<int[]>subtrees=window.extractSubtrees(rootNode);
+		List<Subtree>subtrees=window.extractSubtrees(rootNode);
 		this.collector.emit(tuple, new Values(subtrees));
 		System.out.println("Size of list: "+subtrees.size());
 
