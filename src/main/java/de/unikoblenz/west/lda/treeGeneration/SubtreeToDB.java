@@ -1,5 +1,9 @@
 package de.unikoblenz.west.lda.treeGeneration;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
 import simplemysql.SimpleMySQL;
 import simplemysql.SimpleMySQLResult; 
 
@@ -48,7 +52,7 @@ import simplemysql.SimpleMySQLResult;
 
 //SubtreeExtractor line 115 [up to 25.08.2015 14:45]:
 //SubtreeToDB x=new SubtreeToDB();
-//String result=x.storeTripleToDB(subject, predicate, object);
+//int result=x.storeTripleToDB(subject, predicate, object);
 //x.close();
 
 
@@ -63,7 +67,11 @@ import simplemysql.SimpleMySQLResult;
  */
 
 /*
+ * Example: this function return all triples of the predicate subtree
+ * PARAMETERS: String representation of predicate subtree
  * 
+ * SubtreeToDB x=new SubtreeToDB();
+ * List<Integer[]> res = x.FindInstancesFromSubtree("1,2,^,3");
  * 
  */
 
@@ -88,30 +96,52 @@ public class SubtreeToDB {
 		
 		this.mysql=mysql;
 		//create two tables (one with RDF triples another with graph structure)
-		this.CreatTables("rdf_triple","tree_pair","subtree_structure");
+		this.CreatTables("rdf_triple","subtree_structure");
 		
 		}
-/*	
-	public static void main(String[] args) {
-		
 
-		*/
+	public List<Integer[]> FindInstancesFromSubtree(String subtree) {
+		List<Integer[]> allTriple= new ArrayList<Integer[]>();
 		
+		//1st Step: select query: find all subtrees 
+		SimpleMySQLResult result;
+		String SqlString="SELECT * FROM subtree_structure WHERE StructurePred='"+subtree+"' ;";
+		result = mysql.Query (SqlString); 
+		List<String> strings = new ArrayList<String>();
+		try{
+			while (result.next()){
+				strings.add(result.getString("Structure"));
+				///convert string to List and add to allTriples result add select query
+				allTriple.addAll(convertStringToList(result.getString("Structure")));
+				}
+			result.close();
+		}
+		catch(Exception x) {
+			x.printStackTrace();}
+		return allTriple;
+	}	
 	
-		///==========test area ======
-		//PrintAll(mysql);
-		//AddTriple(mysql, 9, 21, 3);
-		//DelTriple(mysql, 127);
-		//PrintAll(mysql);
-		//DelTable(mysql,"rdf_triple2");
-		//========================================
-		
-		 /*
-		
+
+	
+	public List<Integer[]> convertStringToList(String subtreeAsString){
+		LinkedList<Integer> subtreeIDList=new LinkedList<Integer>();
+		List<Integer[]> result = new ArrayList<Integer[]>();
+		if(subtreeAsString.length()<2){
+			return result;
+		}
+		String[] subtreeAsStringSplit=subtreeAsString.split(",");
+		for(String subtreeAsStringElement:subtreeAsStringSplit){
+			//check if we already have this ID than do not make select query
+			if (!subtreeIDList.contains(Integer.parseInt(subtreeAsStringElement)))	
+			{
+				//make select query for this integer and add array to list
+				//result.add(new Integer[]{1,2,3});
+				result.add(returnTripleFromID(Integer.parseInt(subtreeAsStringElement)));
+				subtreeIDList.add(Integer.parseInt(subtreeAsStringElement));
+			}
+		}
+		return result;
 	}
-
-*/
-
 	
 	public void AddTriple( int subj, int pred, int obj) {
 		AddTriple(subj, pred, obj, "rdf_triple");
@@ -135,19 +165,7 @@ public class SubtreeToDB {
 		return PrintSelected( subj, pred, obj);
 	}
 	
-	
-	//====================================this function is not used anymore
-	public void AddPair(int id1, int id2) {
-		AddPair( id1, id2, "tree_pair");
-	}
-	//====================================this function is not used anymore
-	public void AddPair(int id1, int id2, String TableName) {
-		
-		String SqlString="INSERT INTO "+TableName+" (TripleID1, TripleID2) VALUES("+id1+","+id2+")";
-		//System.out.println(SqlString);
-		mysql.Query (SqlString);
-	}
-	
+
 
 	public void AddSubtreeStructure( String graphString, String PredicateArray) {	
 		String TableName="subtree_structure";
@@ -159,19 +177,12 @@ public class SubtreeToDB {
 	
 	public void DelTriple(int id) {
 		//delete from table tree_pair firstly and then from pair table
-		DelPair(id);
+		//DelPair(id);
 		//DELETE FROM 'rdf_triple' WHERE 'TripleID'=some_value;
 		String SqlString="DELETE FROM rdf_triple WHERE TripleID="+id+";";
 		mysql.Query (SqlString);
 	}
 
-	public void DelPair(int id) {
-		//delete both cases where this id used as TripleID1 and TripleID2
-		String SqlString="DELETE FROM tree_pair WHERE TripleID1="+id+";";
-		mysql.Query (SqlString);
-		SqlString="DELETE FROM tree_pair WHERE TripleID2="+id+";";
-		mysql.Query (SqlString);
-	}
 
 	public void PrintAll() {
 		
@@ -189,6 +200,31 @@ public class SubtreeToDB {
 		catch(Exception x) {
 			x.printStackTrace();}	
 	}
+	
+	
+	public Integer[] returnTripleFromID(int ID) {
+		Integer[] triple = new Integer[3];
+		///print values with particular value from the table rdf_triple
+		//Do a SELECT Query
+		SimpleMySQLResult result;
+		
+		String SqlString="SELECT * FROM rdf_triple WHERE TripleID="+ID+" ;";
+		result = mysql.Query (SqlString); 
+		
+		//Print all of the Results
+		try{
+			while (result.next()){
+				triple[0]=Integer.parseInt(result.getString("Subject"));
+				triple[1]=Integer.parseInt(result.getString("Predicate"));
+				triple[2]=Integer.parseInt(result.getString("Object"));
+				}
+			result.close();
+		}
+		catch(Exception x) {
+			x.printStackTrace();}
+		return triple;
+	}
+	
 	
 	public int PrintSelected(int subj, int pred, int obj) {
 		int id = -20;
@@ -213,7 +249,7 @@ public class SubtreeToDB {
 	}
 	
 
-	public void CreatTables(String TableName1, String TableName2, String TableName3) {
+	public void CreatTables(String TableName1, String TableName3) {
 		String SqlString;
 		if  ( !CheckIfExist(TableName1)){
 			SqlString="CREATE TABLE "+TableName1+" "
@@ -225,30 +261,7 @@ public class SubtreeToDB {
 			mysql.Query (SqlString);
 			System.out.println("Table "+TableName1+" is created!");
 			}
-		else {System.out.println("You tried to creat table "+TableName1+" that already exist.");}
-		if ( !CheckIfExist( TableName2)){
-			SqlString="CREATE TABLE "+TableName2+" "
-					+ "(TripleID1 INT NOT NULL,"
-					+ " TripleID2 INT NOT NULL,"
-					+ " pairID INT NOT NULL AUTO_INCREMENT,"
-					+ " INDEX TripleID1_idx (TripleID1 ASC),"
-					+ " PRIMARY KEY (pairID),"
-					+ " INDEX TripleID2key_idx (TripleID2 ASC),"
-					+ " CONSTRAINT TripleID1key"+TableName1+" "
-					+ " FOREIGN KEY (TripleID1)"
-					+ " REFERENCES "+TableName1+" (TripleID)"
-					+ " ON DELETE NO ACTION"
-					+ " ON UPDATE NO ACTION,"
-					+ " CONSTRAINT TripleID2key"+TableName1+" "
-					+ " FOREIGN KEY (TripleID2)"
-					+ " REFERENCES "+TableName1+" (TripleID)"
-					+ " ON DELETE NO ACTION"
-					+ " ON UPDATE NO ACTION);";
-			mysql.Query (SqlString);	
-			System.out.println("Table "+TableName2+" is created!");
-			}
-		else {System.out.println("You tried to creat table "+TableName2+" that already exist.");}
-		
+		else {System.out.println("You tried to creat table "+TableName1+" that already exist.");}		
 		if  ( !CheckIfExist( TableName3)){
 			SqlString="CREATE TABLE "+TableName3+" "
 					+ "(SubtreeID INT NOT NULL AUTO_INCREMENT, "
@@ -290,6 +303,9 @@ public class SubtreeToDB {
 		if (res.getNumRows()>0) return true;
 		else return false;
 	}
+	
+	
+	
 
 
 	public void close() {
