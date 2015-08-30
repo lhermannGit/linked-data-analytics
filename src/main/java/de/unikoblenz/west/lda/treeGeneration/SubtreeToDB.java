@@ -150,7 +150,7 @@ public class SubtreeToDB {
 	
 
 	public void AddSubtreeStructure( String graphString, String PredicateArray) {	
-		String TableName="subtree_structure"
+		String TableName="subtree_structure";
 		String SqlString="INSERT INTO "+TableName+" ( Structure, StructurePred) VALUES('"+graphString+"','"+PredicateArray+"')";
 		//System.out.println(SqlString);
 		mysql.Query (SqlString);
