@@ -1,6 +1,7 @@
 package de.unikoblenz.west.lda.input;
 
 import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.map.hash.TIntIntHashMap;
 
 public class DisjointSet {
 
@@ -37,11 +38,18 @@ public class DisjointSet {
 		return set;
 	}
 
+	public void setFrequencies(TIntIntHashMap map) {
+		int i = 0;
+		while (i < set.size()) {
+			set.set(i + 3, map.get(set.get(i + 1)));
+			i += 4;
+		}
+	}
+
 	public void print() {
 		int i = 0;
 		while (i < set.size()) {
-			System.out.println(set.get(i) + " " + set.get(i + 1) + " "
-					+ set.get(i + 2) + " " + set.get(i + 3) + " ");
+			System.out.println(set.get(i) + " " + set.get(i + 1) + " " + set.get(i + 2) + " " + set.get(i + 3) + " ");
 			i += 4;
 		}
 		System.out.println(set.size());
@@ -49,6 +57,10 @@ public class DisjointSet {
 
 	public void close() {
 		set.clear();
+	}
+
+	public int getSize() {
+		return set.size();
 	}
 
 }

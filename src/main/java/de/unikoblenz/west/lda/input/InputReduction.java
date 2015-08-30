@@ -2,6 +2,7 @@ package de.unikoblenz.west.lda.input;
 
 import java.util.ArrayList;
 
+import de.unikoblenz.west.lda.input.LookupCache.Cache;
 import de.unikoblenz.west.lda.input.LookupCache.Table;
 import gnu.trove.map.hash.TIntIntHashMap;
 import simplemysql.SimpleMySQL;
@@ -15,12 +16,13 @@ public class InputReduction {
 	LookupCache predicates;
 	LookupCache objects;
 
-	public InputReduction(int upperBound, int flushAmount) {
+	public InputReduction(int upperBound, String prefix) {
 		SimpleMySQL database = SimpleMySQL.getInstance();
-		database.connect("localhost", "root", "", "datamining");
+		MySQLConnectionInfo config = new MySQLConnectionInfo();
+		database.connect(config.getServer(), config.getUser(), config.getPassword(), config.getDatabaseName());
 
-		predicates = new LookupCache(upperBound, flushAmount, Table.predicates);
-		objects = new LookupCache(upperBound, flushAmount, Table.objects);
+		predicates = new LookupCache(upperBound, Table.predicates, prefix);
+		objects = new LookupCache(upperBound, Table.objects, prefix);
 	}
 
 	private int existsWithinSets(int id) {
@@ -39,17 +41,21 @@ public class InputReduction {
 
 		// Subject
 		char[] c = subj.toCharArray();
+		// System.out.println("Getting ID for " + String.copyValueOf(c));
 		int subjID = objects.get(c);
 
 		// Predicate
 		c = pred.toCharArray();
+		// System.out.println("Getting ID for " + String.copyValueOf(c));
 		int predID = predicates.get(c);
 		preds_freq.adjustOrPutValue(predID, 1, 1);
-		// preds_reverse.putIfAbsent(predID, c);
 
 		// Object
 		c = obj.toCharArray();
+		// System.out.println("Getting ID for " + String.copyValueOf(c));
 		int objID = objects.get(c);
+		if (objID == Integer.MIN_VALUE)
+			return;
 
 		int subjSet = existsWithinSets(subjID);
 		int objSet = existsWithinSets(objID);
@@ -74,30 +80,25 @@ public class InputReduction {
 				set = sets.get(objSet);
 			set.add(subjID, predID, objID);
 		}
-
 	}
 
-	// public TIntArrayList getReducedInput() {
-	// int i = 0;
-	// while (i < result.size()) {
-	// result.set(i + 3, preds_freq.get(result.get(i + 1)));
-	// i = i + 4;
-	// }
-	//
-	// return result;
-	// }
-
 	public ArrayList<DisjointSet> getSets() {
-		// TODO need to set frequencies first
-		predicates.flush();
-		objects.flush();
+		for (DisjointSet set : sets) {
+			set.setFrequencies(preds_freq);
+		}
 		return sets;
+	}
+
+	public void commit() {
+		predicates.flush(Cache.old);
+		predicates.flush(Cache.recent);
+		objects.flush(Cache.old);
+		objects.flush(Cache.recent);
 	}
 
 	public void close() {
 		predicates.close();
 		objects.close();
 		preds_freq.clear();
-		// result.clear();
 	}
 }
