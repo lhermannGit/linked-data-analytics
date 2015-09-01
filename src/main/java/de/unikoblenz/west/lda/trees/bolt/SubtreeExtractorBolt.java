@@ -1,6 +1,10 @@
 package de.unikoblenz.west.lda.trees.bolt;
 
+import java.io.InvalidObjectException;
+import java.util.List;
 import java.util.Map;
+
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
@@ -9,12 +13,16 @@ import backtype.storm.topology.base.BaseRichBolt;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
+import de.unikoblenz.west.lda.treeGeneration.RootNode;
+import de.unikoblenz.west.lda.treeGeneration.Subtree;
+import de.unikoblenz.west.lda.treeGeneration.Window;
+import jline.internal.Log;
 
 /**
  * This class provides a storm bolt that consumes tree from
  * {@link SubtreeExtractorBolt} and returns a list of subtrees
  * 
- * @author Martin Koerner <info@mkoerner.de>
+ * @author Martin Koerner <info@mkoerner.de>, Olga Zagovora <zagovora@uni-koblenz.de>	
  *
  */
 public class SubtreeExtractorBolt extends BaseRichBolt {
@@ -28,11 +36,22 @@ public class SubtreeExtractorBolt extends BaseRichBolt {
 	}
 
 	public void execute(Tuple tuple) {
+		Object rootNodeObject=tuple.getValue(0);
+		if(rootNodeObject.getClass()!=RootNode.class){
+			//TODO: better error handling
+			System.out.println("tuple does not contain array");
+			this.collector.ack(tuple);
+			return;
+		}
 
-		String tree = tuple.getString(0);
-		String[] treeSplit = tree.split("\t");
-		this.collector.emit(tuple, new Values(treeSplit[0] + "\t"
-				+ treeSplit[1]));
+		RootNode rootNode=(RootNode)rootNodeObject;
+
+		Window window=new Window();
+		System.out.println("\nTree structure:");
+		List<Subtree>subtrees=window.extractSubtrees(rootNode);
+		this.collector.emit(tuple, new Values(subtrees));
+		System.out.println("Size of list: "+subtrees.size());
+
 		this.collector.ack(tuple);
 	}
 

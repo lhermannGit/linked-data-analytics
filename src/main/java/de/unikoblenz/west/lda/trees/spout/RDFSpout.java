@@ -11,6 +11,14 @@ import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
 import backtype.storm.utils.Utils;
 
+
+/**
+ * 
+ * @author Olga Zagovora <zagovora@uni-koblenz.de>	
+ *
+ */
+
+
 public class RDFSpout extends BaseRichSpout {
 	private static final long serialVersionUID = 1L;
 	
@@ -22,16 +30,22 @@ public class RDFSpout extends BaseRichSpout {
 	}
 
 	public void nextTuple() {
-		Utils.sleep(100);
-		ArrayList<String> triplesList = new ArrayList<String>();
-		// Insert Triples here
-		triplesList
-				.add("<http://example.com/tim> <http://example.com/likes> <http://example.com/car>");
-		triplesList
-				.add("<http://example.com/tim> <http://example.com/likes> <http://example.com/cake>");
-		triplesList
-				.add("<http://example.com/cake> <http://example.com/is> <http://example.com/sweet>");
-		this.collector.emit(new Values(triplesList));
+		Utils.sleep(500);
+//		ArrayList<String> triplesList = new ArrayList<String>();
+//		// Insert Triples here
+//		triplesList
+//				.add("<http://example.com/tim> <http://example.com/likes> <http://example.com/car>");
+//		triplesList
+//				.add("<http://example.com/tim> <http://example.com/likes> <http://example.com/cake>");
+//		triplesList
+//				.add("<http://example.com/cake> <http://example.com/is> <http://example.com/sweet>");
+//		this.collector.emit(new Values(triplesList));
+		int[] testArray = new int[] {1,0,3,1,	11,0,5,1,	9,0,2,1,
+									 3,0,9,1,	1,0,6,1,	11,0,13,1,
+									 13,0,14,1,	13,0,15,1,	6,0,2,1,
+									 14,0,2,1,	2,0,11,1,	13,0,7,1};
+		this.collector.emit(new Values(testArray));
+
 	}
 
 	@Override
