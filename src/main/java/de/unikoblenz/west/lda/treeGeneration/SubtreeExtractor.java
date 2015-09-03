@@ -76,7 +76,6 @@ public class SubtreeExtractor {
 					previousSubtree.setExtended();
 					//get tripleID
 					String tripleID=this.getTripleID(parentName, currentChildNode.getPredicate(),currentChildNode.getName());
-					System.out.println("test:"+tripleID);
 					if (sortedChildren.size() == 0) {
 						extendedSubtree.addAfter(currentChildNode.getPredicate(),tripleID);
 					} else {
@@ -93,7 +92,6 @@ public class SubtreeExtractor {
 			Subtree subtree = new Subtree();
 
 			String tripleID=this.getTripleID(parentName, currentChildNode.getPredicate(),currentChildNode.getName());
-			System.out.println("test2:"+tripleID);
 			subtree.addAfter(currentChildNode.getPredicate(),tripleID);
 
 			extendedSubtrees.add(subtree);
