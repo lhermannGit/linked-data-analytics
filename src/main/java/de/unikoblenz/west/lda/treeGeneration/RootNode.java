@@ -12,6 +12,7 @@ public class RootNode implements Node {
 	public RootNode(int name) {
 		this.name = name;
 		this.children = new ArrayList<ChildNode>();
+		System.out.println("added new Root " + name);
 //		this.priority = 100;
 	}
 
@@ -44,10 +45,6 @@ public class RootNode implements Node {
 	public boolean addIfInside(ChildNode newChildNode, int rdfSubject,
 								List<ChildNode> preventLoop){		
 		boolean inserted = false;
-		if (this.name == rdfSubject) {
-			this.addChildNode(newChildNode);
-			inserted = true;
-		}
 		if (this.name == newChildNode.getName()){			
 			//if newChildNode is added in this tree, parent ChildNode needs to 
 			//add itself to preventLoop
@@ -64,6 +61,11 @@ public class RootNode implements Node {
 					inserted = true;
 				}
 			}
+		}
+		if (this.name == rdfSubject) {
+			this.addChildNode(newChildNode);
+			if (!inserted)
+				inserted = true;
 		}
 		return inserted;
 	}
