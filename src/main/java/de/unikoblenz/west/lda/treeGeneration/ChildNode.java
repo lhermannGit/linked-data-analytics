@@ -49,14 +49,14 @@ public class ChildNode implements Node {
 	// if found: create and add new ChildNode
 	public boolean addIfInside(ChildNode newChildNode, int rdfSubject){
 		boolean inserted = false;
-		if (this.name == rdfSubject) {
-			this.addChildNode(newChildNode);
-			inserted = true;
-		}
 		for (ChildNode child : this.children) {
 			if ((!inserted) & (child.addIfInside(newChildNode, rdfSubject))){
 				inserted = true;
 			}
+		}
+		if ((this.name == rdfSubject) && !(this == newChildNode)){
+			this.addChildNode(newChildNode);
+			inserted = true;
 		}
 		return inserted;
 	}
@@ -65,14 +65,14 @@ public class ChildNode implements Node {
 	// if found:add newChildNode as a child and add 'this' to preventLoop
 	public boolean addIfInside(ChildNode newChildNode, int rdfSubject, List<ChildNode> preventLoop){
 		boolean inserted = false;
-		if (this.name == rdfSubject) {
-			this.addChildNode(newChildNode);
-			preventLoop.add(this);
-		}
 		for (ChildNode child : this.children) {
 			if ((!inserted) & (child.addIfInside(newChildNode, rdfSubject, preventLoop))){
 				inserted = true;
 			}
+		}
+		if ((this.name == rdfSubject) && !(this == newChildNode)){
+			this.addChildNode(newChildNode);
+			preventLoop.add(this);
 		}
 		return inserted;
 	}	

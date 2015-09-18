@@ -90,10 +90,6 @@ public class Window {
 					newRootNode = new RootNode(rdfSubject);
 					rootNodes.add(newRootNode);
 					newRootNode.addChildNode(newChildNode);
-					System.out.println("added new Root " + rdfSubject);
-					System.out.println("added new Child " + newChildNode.getName()
-							+ " with predicate " + newChildNode.getPredicate()
-							+ " to rootnode " + newRootNode.getName());
 					size = size + 2;
 					combineTrees(newChildNode, rdfObject, preventLoop);
 				}					
