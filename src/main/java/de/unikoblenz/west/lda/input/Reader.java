@@ -25,7 +25,8 @@ public class Reader {
 
 	// consume the feed
 	public List<DisjointSet> read() throws IOException {
-		InputReduction reduce = new InputReduction(100000, file.getName());
+		InputReduction reduce = new InputReduction(10000,
+				file.getName().replace("data", "").replace(".", "").replace("-", ""));
 		BufferedReader in = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(file))));
 
 		String line;

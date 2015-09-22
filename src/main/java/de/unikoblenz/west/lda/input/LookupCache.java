@@ -44,8 +44,8 @@ public class LookupCache {
 			this.table = prefix + "predicates";
 			break;
 		}
-		database.Query("DROP TABLE " + table);
-		database.Query("CREATE TABLE " + table + " (k text, v int )");
+		database.Query("DROP TABLE " + this.table);
+		database.Query("CREATE TABLE " + this.table + " (k text, v int )");
 	}
 
 	public int get(char[] tupleElem) {
