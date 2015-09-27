@@ -13,9 +13,16 @@ import java.util.List;
 public class SubtreeExtractor {
 
 	private int minimumCount;
+	private int maximumSize;
 	
-	public SubtreeExtractor(int minimumCount){
+	/**
+	 * 
+	 * @param minimumCount; minimum frequency of predicates in the original dataset
+	 * @param maximumSize: maximum number of predicates in created subtrees
+	 */
+	public SubtreeExtractor(int minimumCount,int maximumSize){
 		this.minimumCount=minimumCount;
+		this.maximumSize=maximumSize;
 	}
 
 	public List<Subtree> extractSubtrees(RootNode rootNode) {
@@ -31,10 +38,12 @@ public class SubtreeExtractor {
 			List<Subtree> currentSubtrees = this.extendSubtreeWithChildNode(
 					new ArrayList<Subtree>(), child,rootNode.getName());
 			List<Subtree> combinedSubtrees = new ArrayList<Subtree>();
+			//combine subtrees that contain the root node
 			for (Subtree currentSubtree : currentSubtrees) {
 				if (!currentSubtree.wasExtended()) {
 					for (Subtree extractedSubtree : extractedSubtrees) {
-						if (!extractedSubtree.wasExtended()) {
+						if (!extractedSubtree.wasExtended()&&extractedSubtree.getNumberOfPredicates()+
+								currentSubtree.getNumberOfPredicates()<=maximumSize) {
 							Subtree combinedSubtree = extractedSubtree.clone();
 							combinedSubtree.addTreeAfter(currentSubtree);
 							combinedSubtrees.add(combinedSubtree);
@@ -65,13 +74,19 @@ public class SubtreeExtractor {
 		for (ChildNode child : sortedChildren) {
 			extendedSubtrees.addAll(this.extendSubtreeWithChildNode(
 					this.cloneList(extendedSubtrees), child, currentChildNode.getName()));
+			//TODO: remove
+//			int count=0;
+//			for(Subtree test: extendedSubtrees){
+//				count+=test.toArray().length;
+//			}
+//			System.out.println(count);
 		}
 
 		if(currentChildNode.getRdfCount()>=this.minimumCount){
 			// add predicate to subtrees which have not been extended
 			List<Subtree> currentLevelSubtrees = new ArrayList<Subtree>();
 			for (Subtree previousSubtree : extendedSubtrees) {
-				if (!previousSubtree.wasExtended()) {
+				if (!previousSubtree.wasExtended()&&previousSubtree.getNumberOfPredicates()<maximumSize) {
 					Subtree extendedSubtree = previousSubtree.clone();
 					previousSubtree.setExtended();
 					//get tripleID
@@ -110,7 +125,7 @@ public class SubtreeExtractor {
 
 	private String getTripleID(int subject, int predicate, int object) {
 		//TODO: check local list if triple was already added and if not, call mysql function and store triple ID in local list
-		String result=subject+"-"+predicate+"-"+object;
+		String result=subject+" "+predicate+" "+object;
 		return result;
 	}
 

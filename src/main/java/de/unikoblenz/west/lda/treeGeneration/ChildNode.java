@@ -3,8 +3,14 @@ package de.unikoblenz.west.lda.treeGeneration;
 import java.util.ArrayList;
 import java.util.List;
 
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+
 public class ChildNode implements Node {
 
+	Logger LOG = LogManager.getLogger(this.getClass().getName());
 	private int name;
 	private int predicate;
 	private int rdfCount;
@@ -32,7 +38,7 @@ public class ChildNode implements Node {
 	public void addChildNode(ChildNode childNode) {
 		if (!this.children.contains(childNode)){
 			this.children.add(childNode);
-			System.out.println("added new Child " + childNode.getName() + " with predicate "
+			LOG.debug("added new Child " + childNode.getName() + " with predicate "
 					+ childNode.getPredicate() + " to ChildNode " + this.name);
 		}
 	}

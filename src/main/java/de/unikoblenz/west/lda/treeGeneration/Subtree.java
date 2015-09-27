@@ -20,7 +20,9 @@ public class Subtree {
 	// contains the triple ids according to the predicate subtree structure. Does not include level separators
 	//TODO: change type to LinkedList<int>
 	private LinkedList<String> subtreeTripleList;
+	
 	private final int levelSeparator = -1;
+	//private final int levelSeparator = Integer.MIN_VALUE;
 	private boolean wasExtended;
 
 	public Subtree() {
@@ -119,6 +121,10 @@ public class Subtree {
 	@Override
 	public int hashCode() {
 		return this.subtreePredicateList.hashCode();
+	}
+	
+	public int getNumberOfPredicates(){
+	return this.subtreePredicateList.size();	
 	}
 
 	public String tripleIDsToString() {
