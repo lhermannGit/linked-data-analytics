@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
+import org.apache.commons.lang.StringEscapeUtils;
+
 
 // supposed to be running in a thread - each with a different data crawl
 public class Reader {
@@ -25,8 +27,7 @@ public class Reader {
 
 	// consume the feed
 	public List<DisjointSet> read() throws IOException {
-		InputReduction reduce = new InputReduction(10000,
-				file.getName().replace("data", "").replace(".", "").replace("-", ""));
+		InputReduction reduce = new InputReduction(10000,StringEscapeUtils.escapeSql(file.getName()));
 		BufferedReader in = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(file))));
 
 		String line;
