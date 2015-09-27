@@ -45,18 +45,18 @@ public class Window {
 		ArraySerializer arraySerializer=new ArraySerializer();
 
 		String homeDir = System.getProperty("user.home");
-//		Reader reader=new Reader(new File(homeDir+FilePathFormatter.setSeparators("/research-lab/data/btc2014/crawls/06/data.nq-0.gz")));
-//		try {
-//			List<DisjointSet>sets=reader.read();
-//			DisjointSet disjointSet=sets.get(0);
-//			System.out.println(disjointSet.getSize());
-//			testArray=disjointSet.getSet().toArray();
-//			//System.out.println(disjointSet.getSet());
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		arraySerializer.serializeArray(homeDir+FilePathFormatter.setSeparators("/research-lab/data/temp/array.ser"),testArray);
+		Reader reader=new Reader(new File(homeDir+FilePathFormatter.setSeparators("/research-lab/data/btc2014/crawls/06/data.nq-0.gz")));
+		try {
+			List<DisjointSet>sets=reader.read();
+			DisjointSet disjointSet=sets.get(0);
+			System.out.println(disjointSet.getSize());
+			testArray=disjointSet.getSet().toArray();
+			//System.out.println(disjointSet.getSet());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		arraySerializer.serializeArray(homeDir+FilePathFormatter.setSeparators("/research-lab/data/temp/array.ser"),testArray);
 		testArray=arraySerializer.deserializeArray(homeDir+FilePathFormatter.setSeparators("/research-lab/data/temp/array.ser"));
 		
 		//old test arrays
