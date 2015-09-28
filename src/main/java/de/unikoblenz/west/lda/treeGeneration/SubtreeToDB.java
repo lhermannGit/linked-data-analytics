@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import de.unikoblenz.west.lda.input.MySQLConnectionInfo;
 import simplemysql.SimpleMySQL;
 import simplemysql.SimpleMySQLResult; 
 
@@ -79,22 +80,26 @@ public class SubtreeToDB {
 	// JDBC driver name and database URL
 	//static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
 	//static final String DB_URL = "jdbc:mysql://localhost:3306/datamining";
-	static final String DB_URL_Simple = "localhost:3306";
-	static final String DB_NAME = "datamining"; //"rdf_schema";
+	static String dbServer = "localhost:3306";
+	static String dbName = "datamining"; //"rdf_schema";
 	//  Database credentials
-	static final String USER = "admin";
-	static final String PASS = "admin";
+	static String user = "admin";
+	static String passwort = "admin";
 	private SimpleMySQL mysql;
 	
 	public SubtreeToDB(){ 
 		
 		//Initialize 
 		//SimpleMySQL mysql;
-		mysql = new SimpleMySQL(); 
+		this.mysql = new SimpleMySQL(); 
 		//Connect to the Database 
-		mysql.connect(DB_URL_Simple,USER, PASS, DB_NAME); 
-		
-		this.mysql=mysql;
+		MySQLConnectionInfo config = new MySQLConnectionInfo();
+		dbServer=config.getServer();
+		user=config.getUser();
+		passwort=config.getPassword();
+		dbName=config.getDatabaseName();
+		mysql.connect(dbServer,user, passwort, dbName); 
+
 		//create two tables (one with RDF triples another with graph structure)
 		this.CreatTables("rdf_triple","subtree_structure");
 		
@@ -297,7 +302,7 @@ public class SubtreeToDB {
 		//check if table exist
 		SimpleMySQLResult res;
 		String str="SELECT * FROM information_schema.tables "
-				+ "WHERE table_schema = '"+DB_NAME+"' AND table_name = '"+TableName+"' "
+				+ "WHERE table_schema = '"+dbName+"' AND table_name = '"+TableName+"' "
 				+ "LIMIT 1;";
 		res=mysql.Query(str);
 		if (res.getNumRows()>0) return true;
