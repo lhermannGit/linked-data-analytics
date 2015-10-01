@@ -188,7 +188,7 @@ public class Window {
 		// look for rootNodes with the same name as rdfObject
 		while (rootNodesIterator.hasNext()) {
 			root = rootNodesIterator.next();
-			if (rdfObject == root.getName()) {
+			if ((rdfObject == root.getName()) && !(newChildNode.getName() == root.getName())) {
 			LOG.debug("[start combining trees]");
 				// remove links if needed to prevent loops
 				for (ChildNode child: preventLoop){
