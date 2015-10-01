@@ -63,12 +63,12 @@ public class ARFFBuilder {
 		
 	}
 	
-	/*
+	/**
 	 *  This method creates an fixed section of comments for each file.
-	 *  There is only single alternation between different ARFF-Files, namely
-	 *  the table name of the subtree.
+	 *  There is only single alternation in the comment section between different 
+	 *  ARFF-Files, namely the table name of the subtree.
 	 *  
-	 *  @Param tableName: the name of the subtree in a Database
+	 *  @param tableName: the name of the subtree in a Database
 	 */
 	private String[] createComment(String tableName) {
 		
