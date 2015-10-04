@@ -134,14 +134,14 @@ public class Statistician {
 		Set<Entry<String,Integer>> mappings = values.entrySet();
 		double total = 0;
 		
-		for(Entry e: mappings){
-			total += (Integer)e.getValue();
+		for(Entry<String,Integer> e: mappings){
+			total += e.getValue();
 		}
 		
-		for(Entry e: mappings){
-			Integer v = (Integer)e.getValue();
+		for(Entry<String,Integer> e: mappings){
+			Integer v = e.getValue();
 			Double d = total / v;
-			String key = (String)e.getKey();
+			String key = e.getKey();
 			distribution.put(key, d);
 			
 		}
