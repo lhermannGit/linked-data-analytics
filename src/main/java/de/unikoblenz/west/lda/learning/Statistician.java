@@ -60,8 +60,7 @@ public class Statistician {
 			conn.close();
 
 		} catch (SQLException e) {
-			System.err
-					.println("Exception occured during exection of the Method countRDFTypes in Statistician, "
+			System.err.println("Exception occured during exection of the Method countRDFTypes in Statistician, "
 							+ "while trying to get the instances for "
 							+ tableName);
 		} 
