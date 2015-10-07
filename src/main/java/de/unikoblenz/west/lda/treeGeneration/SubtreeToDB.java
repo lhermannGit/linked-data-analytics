@@ -153,18 +153,24 @@ public class SubtreeToDB {
 	}	
 	
 	public void AddTriple( int subj, int pred, int obj, String TableName) {
-		//TODO: check if this triple exist then skip SQL query 
-		
+				
 		String SqlString="INSERT INTO "+TableName+" (TripleID, Predicate, Subject, Object) VALUES(null,"+pred+","+subj+","+obj+");";
 		mysql.Query(SqlString);		
 	}
 	
 	public int storeTripleToDB( int subj, int pred,  int obj) {
 		int ID;
-		AddTriple( subj, pred,  obj, "rdf_triple");
-		ID=getID( subj, pred, obj, "rdf_triple");
+		
+		//check if this triple exist then skip SQL query and return the ID of the triple 
+		ID=PrintSelected( subj, pred, obj);
+		if (ID==-20)
+		{
+			AddTriple( subj, pred,  obj, "rdf_triple");
+			ID=getID( subj, pred, obj, "rdf_triple");
+		}
 		return ID;
 	}
+	
 	
 	public int getID(int subj, int pred,  int obj, String TableName) {
 		return PrintSelected( subj, pred, obj);
@@ -237,7 +243,7 @@ public class SubtreeToDB {
 		//Do a SELECT Query
 		SimpleMySQLResult result;
 		
-		String SqlString="SELECT * FROM rdf_triple WHERE (Predicate="+pred+" AND Subject="+subj+" AND Object="+obj+" );";
+		String SqlString="SELECT * FROM rdf_triple WHERE (Predicate="+pred+" AND Subject="+subj+" AND Object="+obj+" ) LIMIT 1;";
 		result = mysql.Query (SqlString); 
 		
 		//Print all of the Results
