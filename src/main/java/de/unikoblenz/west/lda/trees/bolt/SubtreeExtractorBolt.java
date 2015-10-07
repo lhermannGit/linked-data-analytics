@@ -48,7 +48,8 @@ public class SubtreeExtractorBolt extends BaseRichBolt {
 
 		Window window=new Window();
 		System.out.println("\nTree structure:");
-		List<Subtree>subtrees=window.extractSubtrees(rootNode);
+		//TODO set parameters somewhere else
+		List<Subtree>subtrees=window.extractSubtrees(rootNode,100,10);
 		this.collector.emit(tuple, new Values(subtrees));
 		System.out.println("Size of list: "+subtrees.size());
 

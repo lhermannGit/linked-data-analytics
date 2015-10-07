@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import de.unikoblenz.west.lda.input.MySQLConnectionInfo;
 import simplemysql.SimpleMySQL;
 import simplemysql.SimpleMySQLResult; 
 
@@ -79,22 +80,26 @@ public class SubtreeToDB {
 	// JDBC driver name and database URL
 	//static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
 	//static final String DB_URL = "jdbc:mysql://localhost:3306/datamining";
-	static final String DB_URL_Simple = "localhost:3306";
-	static final String DB_NAME = "datamining"; //"rdf_schema";
+	static String dbServer = "localhost:3306";
+	static String dbName = "datamining"; //"rdf_schema";
 	//  Database credentials
-	static final String USER = "admin";
-	static final String PASS = "admin";
+	static String user = "admin";
+	static String passwort = "admin";
 	private SimpleMySQL mysql;
 	
 	public SubtreeToDB(){ 
 		
 		//Initialize 
 		//SimpleMySQL mysql;
-		mysql = new SimpleMySQL(); 
+		this.mysql = new SimpleMySQL(); 
 		//Connect to the Database 
-		mysql.connect(DB_URL_Simple,USER, PASS, DB_NAME); 
-		
-		this.mysql=mysql;
+		MySQLConnectionInfo config = new MySQLConnectionInfo();
+		dbServer=config.getServer();
+		user=config.getUser();
+		passwort=config.getPassword();
+		dbName=config.getDatabaseName();
+		mysql.connect(dbServer,user, passwort, dbName); 
+
 		//create two tables (one with RDF triples another with graph structure)
 		this.CreatTables("rdf_triple","subtree_structure");
 		
@@ -148,18 +153,24 @@ public class SubtreeToDB {
 	}	
 	
 	public void AddTriple( int subj, int pred, int obj, String TableName) {
-		//TODO: check if this triple exist then skip SQL query 
-		
+				
 		String SqlString="INSERT INTO "+TableName+" (TripleID, Predicate, Subject, Object) VALUES(null,"+pred+","+subj+","+obj+");";
 		mysql.Query(SqlString);		
 	}
 	
 	public int storeTripleToDB( int subj, int pred,  int obj) {
 		int ID;
-		AddTriple( subj, pred,  obj, "rdf_triple");
-		ID=getID( subj, pred, obj, "rdf_triple");
+		
+		//check if this triple exist then skip SQL query and return the ID of the triple 
+		ID=PrintSelected( subj, pred, obj);
+		if (ID==-20)
+		{
+			AddTriple( subj, pred,  obj, "rdf_triple");
+			ID=getID( subj, pred, obj, "rdf_triple");
+		}
 		return ID;
 	}
+	
 	
 	public int getID(int subj, int pred,  int obj, String TableName) {
 		return PrintSelected( subj, pred, obj);
@@ -232,7 +243,7 @@ public class SubtreeToDB {
 		//Do a SELECT Query
 		SimpleMySQLResult result;
 		
-		String SqlString="SELECT * FROM rdf_triple WHERE (Predicate="+pred+" AND Subject="+subj+" AND Object="+obj+" );";
+		String SqlString="SELECT * FROM rdf_triple WHERE (Predicate="+pred+" AND Subject="+subj+" AND Object="+obj+" ) LIMIT 1;";
 		result = mysql.Query (SqlString); 
 		
 		//Print all of the Results
@@ -297,7 +308,7 @@ public class SubtreeToDB {
 		//check if table exist
 		SimpleMySQLResult res;
 		String str="SELECT * FROM information_schema.tables "
-				+ "WHERE table_schema = '"+DB_NAME+"' AND table_name = '"+TableName+"' "
+				+ "WHERE table_schema = '"+dbName+"' AND table_name = '"+TableName+"' "
 				+ "LIMIT 1;";
 		res=mysql.Query(str);
 		if (res.getNumRows()>0) return true;
