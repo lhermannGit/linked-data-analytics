@@ -28,6 +28,8 @@ public class Window {
 	private int size;
 	private List<RootNode> rootNodes;
 	private Iterator<RootNode> rootNodesIterator;
+	
+	private SubtreeToDB subtreeToDB;
 
 	/**
 	 * Arguments: Path to input file
@@ -69,7 +71,7 @@ public class Window {
 //									 13,93,14,1,13,92,15,1,	6,91,2,1,
 //									 14,90,2,1,	2,89,11,1,	13,87,7,1};
 //		testArray = new int[] {1,99,3,1,	3,98,5,1,	5,97,6,1,
-//									 3,96,8,1	};
+//									 3,96,8,1,	1,88,3,1};
 		Window window=new Window();
 		List<RootNode>rootNodes=window.buildTree(testArray);
 		System.out.println("Number of rootNodes: "+rootNodes.size());
@@ -77,26 +79,36 @@ public class Window {
 		
      	int rootNodeCounter=0;
 		for (RootNode rootNode : rootNodes) {
-     //	RootNode rootNode=rootNodes.get(20);
+			
+     	//RootNode rootNode=rootNodes.get(20);
+     	//RootNode rootNode=rootNodes.get(0);
 			rootNodeCounter++;
 			String tempDir=homeDir+FilePathFormatter.setSeparators(
      	    		"/research-lab/data/temp/subtrees/");
      	    BufferedWriter predicateTreeTripleWriter=new BufferedWriter(new FileWriter(new File(tempDir+rootNodeCounter+"-predicate-trees.txt")));
      	    BufferedWriter tripleTreeWriter=new BufferedWriter(new FileWriter(new File(tempDir+rootNodeCounter+"-triple-trees.txt")));
-			//System.out.println("creating subtrees for tree "+rootNodeCounter+" of "+rootNodes.size());
+			System.out.println("creating subtrees for tree "+rootNodeCounter+" of "+rootNodes.size());
 			//TreePrinter.printTree(rootNode);
-			List<Subtree>subtrees=window.extractSubtrees(rootNode);
+			List<Subtree>subtrees=window.extractSubtrees(rootNode,100,10);
 			for(Subtree subtree:subtrees){
 				predicateTreeTripleWriter.write(subtree+"\n");
 				tripleTreeWriter.write(subtree.tripleIDsToString()+"\n");
 				//System.out.println(subtree.tripleIDsToString());
 			}
-			System.out.println("Size of list: "+subtrees.size());
+			System.out.println("Number of subtrees: "+subtrees.size());
 			//predicateTreeTripleWriter.write(TreePrinter.treeToString(rootNodes.get(20)));
     		predicateTreeTripleWriter.close();
     		tripleTreeWriter.close();
+    		
+    		window.storeSubtreeInstanceData(subtrees);
 		}
 	}
+	
+	public Window(){
+		this.subtreeToDB=new SubtreeToDB();
+	}
+	
+	
 	public List<RootNode> buildTree(int[] inputArray){
 		
 		int rdfQuadsCount = 0;
@@ -153,14 +165,14 @@ public class Window {
 		return this.rootNodes;
 	}
 
-	public List<Subtree> extractSubtrees(RootNode rootNode){
+	public List<Subtree> extractSubtrees(RootNode rootNode, int minCount, int maxSize){
 		LOG.debug("\ngenerate subtrees:");
 
 		LinkedHashSet<Subtree> subtrees = new LinkedHashSet<Subtree>();
 		int numberOfSubtrees = 0;
 
 		// test printouts for SubtreeExtraction
-		SubtreeExtractor subtreeExtractor = new SubtreeExtractor(100,10);
+		SubtreeExtractor subtreeExtractor = new SubtreeExtractor(minCount,maxSize);
 		List<Subtree> extractedSubtrees = subtreeExtractor
 				.extractSubtrees(rootNode);
 		for (Subtree subtree : extractedSubtrees) {
@@ -211,6 +223,12 @@ public class Window {
 			LOG.debug("deleted RootNode "+ rootToDelete.getName());
 			rootNodes.remove(rootToDelete);
 			rootToDelete = null;
+		}
+	}
+	
+	public void storeSubtreeInstanceData(List<Subtree> subtrees){
+		for (Subtree subtree:subtrees){
+			this.subtreeToDB.AddSubtreeStructure(subtree.tripleIDsToString(), subtree.toString());
 		}
 	}
 }

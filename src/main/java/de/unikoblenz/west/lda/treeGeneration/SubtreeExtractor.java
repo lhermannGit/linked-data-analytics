@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.storm.http.impl.SocketHttpServerConnection;
+
 /**
  * Class for extracting subtrees from a given rootNode
  *
@@ -37,22 +39,32 @@ public class SubtreeExtractor {
 		for (ChildNode child : sortedChildren) {
 			List<Subtree> currentSubtrees = this.extendSubtreeWithChildNode(
 					new ArrayList<Subtree>(), child,rootNode.getName());
-			List<Subtree> combinedSubtrees = new ArrayList<Subtree>();
-			//combine subtrees that contain the root node
-			for (Subtree currentSubtree : currentSubtrees) {
-				if (!currentSubtree.wasExtended()) {
-					for (Subtree extractedSubtree : extractedSubtrees) {
-						if (!extractedSubtree.wasExtended()&&extractedSubtree.getNumberOfPredicates()+
-								currentSubtree.getNumberOfPredicates()<=maximumSize) {
-							Subtree combinedSubtree = extractedSubtree.clone();
-							combinedSubtree.addTreeAfter(currentSubtree);
-							combinedSubtrees.add(combinedSubtree);
-						}
-					}
-				}
-			}
+
+			//combining the trees on the top level results in an exponential number of trees which is not feasible for us
+			
+			//List<Subtree> combinedSubtrees = new ArrayList<Subtree>();
+			////combine subtrees that contain the root node
+			//for (Subtree currentSubtree : currentSubtrees) {
+			//	if (!currentSubtree.wasExtended()) {
+			//		for (Subtree extractedSubtree : extractedSubtrees) {
+			//			if (!extractedSubtree.wasExtended()&&extractedSubtree.getNumberOfPredicates()+
+			//					currentSubtree.getNumberOfPredicates()<=maximumSize) {
+			//				
+			//				
+			//				
+			//				Subtree combinedSubtree = extractedSubtree.clone();
+			//				combinedSubtree.addTreeAfter(currentSubtree);
+			//				combinedSubtrees.add(combinedSubtree);
+			//			}
+			//		}
+			//	}
+			//}
+			//System.out.println("extracted: "+extractedSubtrees.size());
+			//System.out.println("combined: "+ combinedSubtrees.size());
+			//extractedSubtrees.addAll(combinedSubtrees);
+
 			extractedSubtrees.addAll(currentSubtrees);
-			extractedSubtrees.addAll(combinedSubtrees);
+
 		}
 
 		return extractedSubtrees;
@@ -74,12 +86,6 @@ public class SubtreeExtractor {
 		for (ChildNode child : sortedChildren) {
 			extendedSubtrees.addAll(this.extendSubtreeWithChildNode(
 					this.cloneList(extendedSubtrees), child, currentChildNode.getName()));
-			//TODO: remove
-//			int count=0;
-//			for(Subtree test: extendedSubtrees){
-//				count+=test.toArray().length;
-//			}
-//			System.out.println(count);
 		}
 
 		if(currentChildNode.getRdfCount()>=this.minimumCount){
@@ -107,6 +113,7 @@ public class SubtreeExtractor {
 			Subtree subtree = new Subtree();
 
 			String tripleID=this.getTripleID(parentName, currentChildNode.getPredicate(),currentChildNode.getName());
+
 			subtree.addAfter(currentChildNode.getPredicate(),tripleID);
 
 			extendedSubtrees.add(subtree);

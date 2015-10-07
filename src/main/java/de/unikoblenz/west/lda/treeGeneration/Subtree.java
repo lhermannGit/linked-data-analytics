@@ -21,8 +21,8 @@ public class Subtree {
 	//TODO: change type to LinkedList<int>
 	private LinkedList<String> subtreeTripleList;
 	
-	private final int levelSeparator = -1;
-	//private final int levelSeparator = Integer.MIN_VALUE;
+	//private final int levelSeparator = -1;
+	private final int levelSeparator = Integer.MIN_VALUE;
 	private boolean wasExtended;
 
 	public Subtree() {
