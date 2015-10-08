@@ -20,8 +20,15 @@ public class ARFFBuilder {
 		conMan = new ConnectionManager();
 	}
 	
-
-	public String createFile(int[] subtree, String tableName) throws IOException {
+	/**
+	 * Creates an new ARFF-File for the pattern that can be found
+	 * in a database table with the name tableName.
+	 * 
+	 * @param tableName - The name of a pattern in a db
+	 * @return - The name of the newly created ARFF-File
+	 * @throws IOException
+	 */
+	public String createFile(String tableName) throws IOException {
 		
 		tableName = tableName.toLowerCase();
 		String fileName = tableName + ".arff";
