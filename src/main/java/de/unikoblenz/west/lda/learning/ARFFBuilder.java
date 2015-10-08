@@ -4,8 +4,8 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedList;
@@ -14,14 +14,11 @@ import java.util.LinkedList;
 
 public class ARFFBuilder {
 	
-	private static final String database = "test";
-	private static final String dbpassword = "test";
-	private static final String user = "LinkedDataAnalytics";
-	private static final int treeMarker = Integer.MIN_VALUE;
-	private static final String JDBCDriver = "com.mysql.jdbc.Driver";
+	private ConnectionManager conMan;
 	
-	private int num_of_coloumns = 0;
-	
+	public ARFFBuilder(){
+		conMan = new ConnectionManager();
+	}
 	
 
 	public String createFile(int[] subtree, String tableName) throws IOException {
@@ -29,29 +26,28 @@ public class ARFFBuilder {
 		tableName = tableName.toLowerCase();
 		String fileName = tableName + ".arff";
 		String[] comment = createComment(tableName);
-		LinkedList<String> header = createHeader(subtree);
-		num_of_coloumns = header.size();
+		LinkedList<String> header = createHeader(tableName);
 		BufferedWriter out = new BufferedWriter(new FileWriter(fileName));
-		String sub = java.util.Arrays.toString(subtree);
+		
 		
 		for(String line : comment){
 			out.write(line);
 			out.newLine();
 		}
 		
-		out.write("% " + sub);
-		out.newLine();
-		out.write("@relation '" + tableName + "'");
+		out.write("@relation " + tableName);
 		out.newLine();
 		
 		for(String line : header){
 			out.write(line);
 			out.newLine();
 		}
+		
 		out.write("@data");
 		out.newLine();
 		
 		LinkedList<String> data = readInstances(tableName);
+		
 		for(String line: data){
 			out.write(line);
 			out.newLine();
@@ -87,75 +83,89 @@ public class ARFFBuilder {
 		return comment;
 	}
 
-	/*
-	 * This method creates the header section of an ARFF-File.
+	/**
+	 * This method creates the header section of an ARFF-File. It basically creates
+	 * one attribute for each column in the ARFF-File. The type of the attribute is
+	 * always numeric.
 	 * 
-	 * @Param subtree: The array representation of an subtree
+	 * @Param tableName: the name of a table in a database for a pattern
+	 * @return returns the header of an ARFF-File as a List of Strings
 	 */
-	private LinkedList<String> createHeader(int[] subtree){
+	private LinkedList<String> createHeader(String tableName){
 		
 		LinkedList<String> header = new LinkedList<String>();
-		
-		for(int i=0; i<subtree.length; i++){
+		Connection con = conMan.getConnection();
+		try {
+			Statement stm = con.createStatement();
+			String query = "SELECT (*) FROM " + tableName;
+			ResultSet rs = stm.executeQuery(query);
+			ResultSetMetaData mD = rs.getMetaData();
+			int count = mD.getColumnCount();
+			int i = 0;
+			int j = 1;
 			
-			if(i == 0)
-				header.add(i,"@attribute Root" + subtree[i] + " string");
-			
-			if(i != 0 && subtree[i] != treeMarker)
-				header.add(i, "@attribute Child" + subtree[i] + " string");
+			while(i < count){
+				String subject = "@attribute Subject" + j + " numeric";
+				String predicate = "@attribute Predicate" + j + " numeric";
+				String object = "@attribute Object" + j + " numeric";
+				
+				header.add(subject);
+				header.add(predicate);
+				header.add(object);
+				
+				i += 3;
+				j++;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
+		
 		return header;
 	}
 	
-	
-	private LinkedList<String> readInstances(String tableName){
-		
+	/**
+	 * Reads instances for a specific pattern out of a database and
+	 * creates the data section of the ARFF-File, which is basically
+	 * a comma seperated list of values.
+	 * 
+	 * @param tableName
+	 * @return
+	 */
+	private LinkedList<String> readInstances(String tableName) {
+
 		LinkedList<String> rows = new LinkedList<String>();
-		Connection conn = getConnection();
-		
+		Connection conn = conMan.getConnection();
 		try {
-			
 			Statement stm = conn.createStatement();
 			String query = "SELECT (*) FROM " + tableName;
 			ResultSet rs = stm.executeQuery(query);
-			
-			while(rs.next()){
-				String row = "";
-				for(int i=0; i<num_of_coloumns;i++){
-					if(i != num_of_coloumns - 1)
-						row = row + "'" + rs.getString(i) + "'" + ", ";
-					else
-						row = row + "'" + rs.getString(i) + "'";
+			ResultSetMetaData mD = rs.getMetaData();
+			int count = mD.getColumnCount();
+
+			while (rs.next()) {
+
+				String row = new String();
+				row = "";
+				for (int i = 0; i < count; i++) {
+
+					int value = rs.getInt(i);
+
+					if (!(i == count - 1)) {
+						row = row + value + ",";
+					} else {
+						row = row + value;
+					}
+
+					rows.add(row);
 				}
-				rows.add(row);
 			}
 			
-			stm.close();
-			conn.close();
-			
 		} catch (SQLException e) {
-			
-			System.err.println("Reading of Instances failed");
-		} 
-		
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		return rows;
 	}
 
-	private Connection getConnection() {
-		Connection conn = null;
-		
-		try {
-			Class.forName(JDBCDriver);
-			conn = DriverManager.getConnection(database, user, dbpassword);
-			
-		} catch (ClassNotFoundException e){
-			System.err.println("Could not load JDBC Driver");
-		} catch (SQLException e) {
-			System.err.println("Connection to Database failed");
-		}
-		
-		return conn;
-		
-	}
-	
 }
