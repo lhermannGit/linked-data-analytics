@@ -1,6 +1,7 @@
 package de.unikoblenz.west.lda.treeGeneration;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -39,7 +40,7 @@ import simplemysql.SimpleMySQLResult;
 //PARAMETERs:  subject,predicate, object
 //
 //SubtreeToDB x=new SubtreeToDB();
-//System.out.println("====ID :"+x.storeTripleToDB(2, 2, 2));   
+//System.out.println("====ID :"+x.storeTripleToDB(998, 7, 3));   
 
 //Example:this function store tree of IDs and tree of predicates into DB
 //PARAMETERs: String_tree_of_IDs, String_tree_of_predicates
@@ -67,13 +68,21 @@ import simplemysql.SimpleMySQLResult;
  */
 
 /*
- * Example: this function return all triples of the predicate subtree
+ * Example1: this function return all triples of the predicate subtree
  * PARAMETERS: String representation of predicate subtree
  * 
  * SubtreeToDB x=new SubtreeToDB();
  * List<Integer[]> res = x.FindInstancesFromSubtree("1,2,^,3");
  * 
  */
+
+/*Example2: store all instances of one predicateSubtree into DB table "pattern"
+ * PARAMETERS: String representation of predicate subtree, name of the table
+ * 
+ * String TableName="pattern";
+ * x.FindInstancesFromSubtreeStoreIntoDB("1,2,^,3",TableName);
+*/
+
 
 public class SubtreeToDB {
 	// JDBC driver name and database URL
@@ -94,7 +103,7 @@ public class SubtreeToDB {
 		//Connect to the Database 
 		mysql.connect(DB_URL_Simple,USER, PASS, DB_NAME); 
 		
-		this.mysql=mysql;
+		//this.mysql=mysql;
 		//create two tables (one with RDF triples another with graph structure)
 		this.CreatTables("rdf_triple","subtree_structure");
 		
@@ -121,7 +130,24 @@ public class SubtreeToDB {
 		return allTriple;
 	}	
 	
-
+	public void FindInstancesFromSubtreeStoreIntoDB(String subtree,String TableName) {
+		
+		//1st Step: select query: find all subtrees 
+		SimpleMySQLResult result;
+		String SqlString="SELECT * FROM subtree_structure WHERE StructurePred='"+subtree+"' ;";
+		result = mysql.Query (SqlString); 
+		List<String> strings = new ArrayList<String>();
+		try{
+			while (result.next()){
+				strings.add(result.getString("Structure"));
+				///convert string to List and add to allTriples result add select query
+				convertStringToList2(result.getString("Structure"), TableName);
+				}
+			result.close();
+		}
+		catch(Exception x) {
+			x.printStackTrace();}
+	}
 	
 	public List<Integer[]> convertStringToList(String subtreeAsString){
 		LinkedList<Integer> subtreeIDList=new LinkedList<Integer>();
@@ -142,6 +168,45 @@ public class SubtreeToDB {
 		}
 		return result;
 	}
+	
+	public void convertStringToList2(String subtreeAsString, String TableName1){
+		if(subtreeAsString.length()>=2){
+		
+		//create the table in DB
+		String SqlString="CREATE TABLE "+TableName1+" "
+				+ "(TreeID INT NOT NULL AUTO_INCREMENT,";
+		int subTreeLength=(subtreeAsString.length()+1)/2;
+		if  ( !CheckIfExist(TableName1)){
+			
+			for (int i = 0; i < subTreeLength; i++) {
+			SqlString+=
+					" Subject"+i+" INT NOT NULL,"
+					+ " Predicate"+i+" INT NOT NULL,"
+					+ "  Object"+i+" INT NOT NULL,";
+			}
+		
+			SqlString=SqlString + "  PRIMARY KEY (TreeID) );";
+			mysql.Query (SqlString);
+			System.out.println("Table "+TableName1+" is created!");
+			}
+		
+		String values="";
+		
+		String[] subtreeAsStringSplit=subtreeAsString.split(",");
+		for(String subtreeAsStringElement:subtreeAsStringSplit){
+			String triple=Arrays.toString(returnTripleFromID(Integer.parseInt(subtreeAsStringElement)));
+			triple = triple.substring(1, triple.length()-1);
+			if (values.length()!=0)
+				values+=","+triple;
+			else
+				values+=triple;
+		}
+		 
+		System.out.println(values);
+		String SqlString2="INSERT INTO "+TableName1+" VALUES(null,"+values+");";
+		mysql.Query(SqlString2);	
+	}}
+	
 	
 	public void AddTriple( int subj, int pred, int obj) {
 		AddTriple(subj, pred, obj, "rdf_triple");
