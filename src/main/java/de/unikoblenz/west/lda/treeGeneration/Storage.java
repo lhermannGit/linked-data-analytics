@@ -5,10 +5,12 @@ import java.util.List;
 
 class MySubTree {
     int startLvl;
+    int endLvl;
     String path;
 
-    public MySubTree(int startLvl, String path) {
+    public MySubTree(int startLvl,int endLvl, String path) {
         this.startLvl = startLvl;
+        this.endLvl = endLvl;
         this.path = path;
     }
 }
@@ -16,7 +18,7 @@ class MySubTree {
 
 public interface Storage {
 	
-	public List<MySubTree> query (String searchPath);
+	public List<MySubTree> query (int endLvl);
 	
 	
 	/*

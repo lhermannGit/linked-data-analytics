@@ -84,7 +84,7 @@ class StoreToDB implements Storage {
 					+ " Crawl INT,"
 					+ " Bag INT,"
 					+ " StartLvl INT NOT NULL,"
-					+ " EndLvl INT,"
+					+ " EndLvl INT NOT NULL,"
 					+ " Path VARCHAR(255) NOT NULL,"
 					+ " PRIMARY KEY (Id) );";
 			mysql.Query (SqlString);
@@ -131,14 +131,14 @@ class StoreToDB implements Storage {
 	 * Retrieve SubTrees from DB
 	 */
 	
-	public List<MySubTree> query (String searchPath){
+	public List<MySubTree> query (int endLvl){
 		List <MySubTree> SubTrees= new ArrayList<MySubTree>();
 		
 		//StoreToDB DB=new StoreToDB();
 
 		SimpleMySQLResult result;
 		//query DB where Path==searchPath
-		String SqlString="SELECT * FROM rdf_triple WHERE ( Path="+searchPath+");";
+		String SqlString="SELECT * FROM rdf_triple WHERE ( EndLvl="+endLvl+");";
 		//result=DB.Query(SqlString); 
 		result=mysql.Query(SqlString);
 		
@@ -147,8 +147,8 @@ class StoreToDB implements Storage {
 			while (result.next()){
 				//System.out.println("StartLvl:"+result.getString("StartLvl"));
 				int startLvl=Integer.parseInt(result.getString("StartLvl"));
-				String path=result.getString("StartLvl");
-				SubTrees.add(new MySubTree(startLvl,path));
+				String path=result.getString("Path");
+				SubTrees.add(new MySubTree(startLvl,endLvl,path));
 				}
 			result.close();
 			//DB.close();
