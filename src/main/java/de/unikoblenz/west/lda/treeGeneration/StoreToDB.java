@@ -78,21 +78,53 @@ class StoreToDB implements Storage {
 	
 	private void CreatTables(String TableName1) {
 		String SqlString;
+		
+		if  ( !CheckIfExist("Bags")){
+			SqlString="CREATE TABLE Bags "
+					+ " (BagID INT NOT NULL AUTO_INCREMENT,"
+					+ " Name VARCHAR(255) NOT NULL,"
+					+ " PRIMARY KEY (BagID) );";
+			mysql.Query (SqlString);
+			System.out.println("Table Bags is created!");
+			}
+		else {System.out.println("You tried to create table Bags that already exist.");
+		}
+		
 		if  ( !CheckIfExist(TableName1)){
 			SqlString="CREATE TABLE "+TableName1+" "
 					+ " (Id INT NOT NULL AUTO_INCREMENT,"
-					+ " Crawl INT,"
-					+ " Bag INT,"
+					+ " Crawl INT NULL,"
+					+ " Bag INT NULL,"
 					+ " StartLvl INT NOT NULL,"
 					+ " EndLvl INT NOT NULL,"
 					+ " Path VARCHAR(255) NOT NULL,"
-					+ " PRIMARY KEY (Id) );";
+					+ " PRIMARY KEY (Id) ,"
+					+ " FOREIGN KEY (Bag) REFERENCES Bags (BagID) );";
 			mysql.Query (SqlString);
 			System.out.println("Table "+TableName1+" is created!");
 			}
 		else {System.out.println("You tried to create table "+TableName1+" that already exist.");}		
 	}
-
+/*
+ * FOREIGN KEY (Bag) REFERENCES Bags(BagID)
+ * 
+ * 
+ * 
+ *  CREATE TABLE `datamining`.`new_table` (
+  `ID` INT NOT NULL AUTO_INCREMENT COMMENT '',
+  `Path` VARCHAR(45) NOT NULL COMMENT '',
+  `Bag` INT NULL COMMENT '',
+  `EndLvl` INT NOT NULL COMMENT '',
+  `Crawl` INT NULL COMMENT '',
+  `StartLvl` INT NOT NULL COMMENT '',
+  PRIMARY KEY (`ID`)  COMMENT '',
+  INDEX `BagID_idx` (`Bag` ASC)  COMMENT '',
+  CONSTRAINT `BagID`
+    FOREIGN KEY (`Bag`)
+    REFERENCES `datamining`.`Bags` (`BagID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
+ */
 
 	private boolean CheckIfExist(String TableName) {
 			//check if table exist
