@@ -1,10 +1,6 @@
 package de.unikoblenz.west.lda.trees.bolt;
 
-import java.io.InvalidObjectException;
-import java.util.List;
 import java.util.Map;
-
-import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
@@ -12,46 +8,61 @@ import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseRichBolt;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
-import backtype.storm.tuple.Values;
+import de.unikoblenz.west.lda.treeGeneration.Cache;
+import de.unikoblenz.west.lda.treeGeneration.Database;
 import de.unikoblenz.west.lda.treeGeneration.RootNode;
-import de.unikoblenz.west.lda.treeGeneration.Subtree;
-import de.unikoblenz.west.lda.treeGeneration.Window;
-import jline.internal.Log;
+import de.unikoblenz.west.lda.treeGeneration.SubtreeBuilder;
+import de.unikoblenz.west.lda.treeGeneration.TreeTraversal;
 
 /**
  * This class provides a storm bolt that consumes tree from
  * {@link SubtreeExtractorBolt} and returns a list of subtrees
  * 
- * @author Martin Koerner <info@mkoerner.de>, Olga Zagovora <zagovora@uni-koblenz.de>	
+ * @author Martin Koerner <info@mkoerner.de>, Olga Zagovora
+ *         <zagovora@uni-koblenz.de>
  *
  */
 public class SubtreeExtractorBolt extends BaseRichBolt {
 	private static final long serialVersionUID = 1L;
-	
+
 	OutputCollector collector;
 
-	public void prepare(@SuppressWarnings("rawtypes") Map conf, TopologyContext context,
-			OutputCollector collector) {
+	public void prepare(@SuppressWarnings("rawtypes") Map conf, TopologyContext context, OutputCollector collector) {
 		this.collector = collector;
 	}
 
 	public void execute(Tuple tuple) {
-		Object rootNodeObject=tuple.getValue(0);
-		if(rootNodeObject.getClass()!=RootNode.class){
-			//TODO: better error handling
+		Object rootNodeObject = tuple.getValue(0);
+		if (rootNodeObject.getClass() != RootNode.class) {
+			// TODO: better error handling
 			System.out.println("tuple does not contain array");
 			this.collector.ack(tuple);
 			return;
 		}
 
-		RootNode rootNode=(RootNode)rootNodeObject;
+		RootNode rootNode = (RootNode) rootNodeObject;
 
-		Window window=new Window();
 		System.out.println("\nTree structure:");
-		//TODO set parameters somewhere else
-		List<Subtree>subtrees=window.extractSubtrees(rootNode,100,10);
-		this.collector.emit(tuple, new Values(subtrees));
-		System.out.println("Size of list: "+subtrees.size());
+		// TODO set parameters somewhere else
+		// List<Subtree>subtrees=window.extractSubtrees(rootNode,100,10);
+		// this.collector.emit(tuple, new Values(subtrees));
+		// System.out.println("Size of list: "+subtrees.size());
+
+		// TODO Create Cache and DB connection
+
+		TreeTraversal traversal = new TreeTraversal();
+		SubtreeBuilder builder = new SubtreeBuilder();
+		Database db = new Database();
+		Cache cache = new Cache();
+		traversal.Initialize(rootNode);
+		builder.Initialize(db, cache);
+
+		while (true) {
+			String path = traversal.getNextPath();
+			if (path == null)
+				break;
+			builder.buildTrees(path);
+		}
 
 		this.collector.ack(tuple);
 	}
