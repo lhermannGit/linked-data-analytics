@@ -22,7 +22,7 @@ public interface Storage {
 	
 	
 	/*
-	 * store only path and startLvl
+	 * store only path, startLvl and endlvl
 	 */
 	
 	public void save (List <MySubTree> subTrees);

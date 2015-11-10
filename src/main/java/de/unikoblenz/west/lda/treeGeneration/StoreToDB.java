@@ -146,8 +146,8 @@ class StoreToDB implements Storage {
 		mysql.Query(SqlString);		
 	}
 	
-	public void AddPath( int startLvl, String path) {
-		String SqlString="INSERT INTO "+TableName+" (StartLvl, Path) VALUES( "+startLvl+","+path+");";
+	public void AddPath( int startLvl, int endLvl, String path) {
+		String SqlString="INSERT INTO "+TableName+" (StartLvl, EndLvl, Path) VALUES( "+startLvl+","+endLvl+","+path+");";
 		mysql.Query(SqlString);		
 	}
 	
@@ -203,7 +203,7 @@ class StoreToDB implements Storage {
 		
 		for (MySubTree element : subTrees) {
 			//DB.AddPath(element.startLvl, element.path);
-			AddPath(element.startLvl, element.path);
+			AddPath(element.startLvl, element.endLvl, element.path);
 		}
 		
 		//DB.close();
