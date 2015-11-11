@@ -24,8 +24,10 @@ public class TreeFilter {
 			// queriedPaths = Cache.query(path)
 
 			for (String queried : queriedPaths) {
-				//have to split by points on highest level
-				String[] split = queried.split(".");
+				// have to split by points on highest level
+				// need to find a way to only split on this level
+				// String[] split = queried.split(".");
+				String[] split = splitByPoint(queried);
 				for (String splitQuery : split) {
 					if (splitQuery.matches("^" + "\\(*" + Pattern.quote(parent) + ".*")) {
 						relevantTrees.add(queried);
@@ -55,6 +57,31 @@ public class TreeFilter {
 			queryCache(path);
 		}
 
+	}
+
+	public String[] splitByPoint(String queried) {
+
+		List<Integer> dotIndices = new ArrayList<Integer>();
+		int paranthesesOpenCnt = 0;
+		int paranthesesCloseCnt = 0;
+		for (char c : queried.toCharArray()) {
+			if (paranthesesOpenCnt != 0 && paranthesesCloseCnt != 0 && paranthesesOpenCnt == paranthesesCloseCnt)
+				dotIndices.add(queried.indexOf(c));
+			else if (c == '(')
+				paranthesesOpenCnt++;
+			else if (c == ')')
+				paranthesesCloseCnt++;
+		}
+		int dotSize = dotIndices.size();
+		String[] split = new String[dotSize];
+		int endIndex = 0;
+		for (int i = 0; i <= dotSize - 1; i++) {
+			int currentIndex = dotIndices.get(i);
+			endIndex = currentIndex + 1;
+			split[i] = queried.substring(endIndex, currentIndex);
+		}
+
+		return split;
 	}
 
 	public String transformPath(String path) {
