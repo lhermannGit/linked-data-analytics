@@ -6,8 +6,9 @@ import java.util.regex.Pattern;
 
 public class TreeFilter {
 	// Getting Path from TreeTraversal
-	static String path = "1/2/2/2/2/2";
-	static String queried = "(1/1).2((1.(2/1))).3(1.2)";
+	static String path = "1/1";
+	//static String queried = "(1/1).2((1.(2/1))).3(1.2)";
+	
 
 	// String path = getPath();
 
@@ -17,19 +18,16 @@ public class TreeFilter {
 	String parent = "";
 
 	public void queryCache(String path) {
-
-		// getting results from the cache
-		if (!path.contains("/")) {
-			// Query Cache with "parent" matched
+		
+		
+		if (!path.contains("/")) { // Query Cache with "parent" matched
+			
 			List<String> queriedPaths = new ArrayList<String>();
 			// queriedPaths = Cache.query(path)
 			queriedPaths.add("(1/1).2((1.(2/1))).3(1.2)");
 
 			for (String queried : queriedPaths) {
-				// have to split by points on highest level
-				// need to find a way to only split on this level
-				// String[] split = queried.split(".");
-				String[] split = splitByPoint(queried);
+				String[] split = splitByPoint(queried); // have to split by points on highest level
 				for (String splitQuery : split) {
 					if (splitQuery.matches("^" + "\\(*" + Pattern.quote(parent) + ".*")) {
 						relevantTrees.add(queried);
@@ -53,7 +51,6 @@ public class TreeFilter {
 					relevantTrees.add(queried);
 				}
 			}
-
 			// System.out.println("TF - Path: " + path);
 			// System.out.println("TF - Parent: "+parent);
 			queryCache(path);
@@ -67,43 +64,35 @@ public class TreeFilter {
 		int paranthesesOpenCnt = 0;
 		int paranthesesCloseCnt = 0;
 
-		// can't get right position through iterator
-//		for (char c : queried.toCharArray()) {
-//			if (paranthesesOpenCnt != 0 && paranthesesCloseCnt != 0 && paranthesesOpenCnt == paranthesesCloseCnt) {
-//				//adds always the first dot
-//				dotIndices.add(queried.indexOf(c) + 1);
-//				paranthesesCloseCnt = paranthesesOpenCnt = 0;
-//			} else if (c == '(' && c != '.')
-//				paranthesesOpenCnt++;
-//			else if (c == ')' && c != '.')
-//				paranthesesCloseCnt++;
-//		}
 		char c;
-		for (int i = 0; i <= queried.length()-1; i++){
+		for (int i = 0; i <= queried.length() - 1; i++) {
 			c = queried.charAt(i);
-			System.out.println("Current: "+queried.substring(i));
-				if (paranthesesOpenCnt != 0 && paranthesesCloseCnt != 0 && paranthesesOpenCnt == paranthesesCloseCnt) {
-					dotIndices.add(i);
-					paranthesesCloseCnt = paranthesesOpenCnt = 0;
-				} else if (c == '(' && c != '.')
-					paranthesesOpenCnt++;
-				else if (c == ')' && c != '.')
-					paranthesesCloseCnt++;
-			
+			// System.out.println("Current: " + queried.substring(i));
+			if (paranthesesOpenCnt != 0 && paranthesesCloseCnt != 0 && paranthesesOpenCnt == paranthesesCloseCnt) {
+				dotIndices.add(i);
+				paranthesesCloseCnt = paranthesesOpenCnt = 0;
+			} else if (c == '(' && c != '.')
+				paranthesesOpenCnt++;
+			else if (c == ')' && c != '.')
+				paranthesesCloseCnt++;
 		}
 
 		int dotSize = dotIndices.size();
-		String[] split = new String[dotSize+1]; //one more path than dots
+		String[] split = new String[dotSize + 1]; // one more path than dots
 		int endIndex = 0;
-int currentIndex = 0;
+		int currentIndex = 0;
+
 		for (int i = 0; i <= dotSize; i++) {
-			if (i != dotSize) split[i] = queried.substring(currentIndex,queried.length()-1);
-			else
-			{ currentIndex = dotIndices.get(i);
+			if (i != dotSize) { 
+				currentIndex = dotIndices.get(i);
 				split[i] = queried.substring(endIndex, currentIndex);
-			endIndex = currentIndex+1;}
-			split[i] = queried.substring(currentIndex,queried.length()-1);
-			System.out.println(split[i]);
+				endIndex = currentIndex + 1;
+			}
+
+			else //add last path
+				split[i] = queried.substring(endIndex);
+
+			System.out.println("Split[" + i + "]= " + split[i]);
 		}
 
 		return split;
@@ -137,8 +126,8 @@ int currentIndex = 0;
 
 	public static void main(String[] args) {
 		TreeFilter tf = new TreeFilter();
-		//tf.queryCache(path);
-		tf.splitByPoint(queried);
+		 tf.queryCache(path);
+		//tf.splitByPoint(queried);
 		// String bla = "((((1/1/3/2))))))))";
 		// String parent = "1/1";
 		// System.out.println(bla.matches("^" + "\\(*" + Pattern.quote(parent) +
