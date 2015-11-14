@@ -214,7 +214,7 @@ class StoreToDB implements Storage {
 	 * Method to store all fields in the Table including bag and crawl id
 	 */
 	
-	public void save (List <MySubTree> subTrees, int crawl, int bag, int endLvl){
+	public void save (List <MySubTree> subTrees, int crawl, int bag){
 		/*
 		* int crawl=0;
 		* int bag=0;
@@ -225,7 +225,7 @@ class StoreToDB implements Storage {
 		
 		for (MySubTree element : subTrees) {
 			//DB.AddPath(crawl, bag, element.startLvl, endLvl, element.path);
-			AddPath(crawl, bag, element.startLvl, endLvl, element.path);
+			AddPath(crawl, bag, element.startLvl, element.endLvl, element.path);
 		}
 		
 		//DB.close();

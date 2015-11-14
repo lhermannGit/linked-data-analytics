@@ -32,5 +32,5 @@ public interface Storage {
 	 * store all fields in the Table including bag and crawl id
 	 */
 	
-	public void save (List <MySubTree> subTrees, int crawl, int bag, int endLvl);
+	public void save (List <MySubTree> subTrees, int crawl, int bag);
 }
