@@ -150,12 +150,12 @@ class StoreToDB implements Storage {
 	public void AddPath( int crawl, int bag, int startLvl, int endLvl, String path) {
 		
 		String SqlString="INSERT INTO "+TableName+" (Id, Crawl, Bag, StartLvl, EndLvl, Path) VALUES(null,"+
-		crawl+","+bag+","+startLvl+","+endLvl+","+path+");";
+		crawl+","+bag+","+startLvl+","+endLvl+",\""+path+"\");";
 		mysql.Query(SqlString);		
 	}
 	
 	public void AddPath( int startLvl, int endLvl, String path) {
-		String SqlString="INSERT INTO "+TableName+" (StartLvl, EndLvl, Path) VALUES( "+startLvl+","+endLvl+","+path+");";
+		String SqlString="INSERT INTO "+TableName+" (StartLvl, EndLvl, Path) VALUES( "+startLvl+","+endLvl+",\""+path+"\");";
 		mysql.Query(SqlString);		
 	}
 	

@@ -177,7 +177,7 @@ class StoreToMariaDB implements Storage {
 	
 	public void AddPath( int startLvl, int endLvl, String path) throws SQLException {
 		//Statement stmt = connection.createStatement();
-		String SqlString="INSERT INTO "+TableName+" (StartLvl, EndLvl, Path) VALUES( "+startLvl+","+endLvl+","+path+");";
+		String SqlString="INSERT INTO "+TableName+" (StartLvl, EndLvl, Path) VALUES( "+startLvl+","+endLvl+",\""+path+"\");";
 		this.stmt.executeUpdate(SqlString);
 		//stmt.close();
 	}
