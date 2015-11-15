@@ -12,7 +12,10 @@ import de.unikoblenz.west.lda.input.MySQLConnectionInfo;
 
 /*
  * This class provide connection to MariaDB, store subtrees into DB and provide access to the DB data
- * Notes: - MariaDB should be set up and run 
+ * Notes: - MariaDB should be set up and run [use port 3307, while port 3306 is occupied by MySQL DB ]
+ * 		  - "datamining" DB should be created in advance
+ * 		  - in order to get access to DB create config.properties file
+ * 		  - DB_URL = "jdbc:mysql://localhost:3307/datamining" - change it if needed
  *  	  - Add to build Path MariaDBConnector: libs/mariadb-java-client-1.2.3.jar
  *  
  * @author Olga Zagovora <zagovora@uni-koblenz.de>
@@ -75,6 +78,7 @@ class StoreToMariaDB implements Storage {
 		dbName=config.getDatabaseName();
 		user=config.getUser();
 		passwort=config.getPassword();
+		// TODO Add DB_URL in config.properties
 
 		//Connect to the Database 		
 		try {
