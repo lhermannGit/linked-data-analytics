@@ -18,7 +18,7 @@ class MySubTree {
 
 public interface Storage {
 	
-	public List<MySubTree> query (int endLvl);
+	public List<MySubTree> query (String Pattern);
 	
 	
 	/*

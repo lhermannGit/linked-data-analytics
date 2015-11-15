@@ -1,16 +1,19 @@
 package de.unikoblenz.west.lda.treeGeneration;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 import de.unikoblenz.west.lda.input.MySQLConnectionInfo;
-import simplemysql.SimpleMySQL;
-import simplemysql.SimpleMySQLResult;
 
 /*
- * This class provide connection to DB, store trees into DB and provide access to the DB data
- * Notes: - MySQL DB should be set up and run 
- *  	  - Add to build Path library: libs/SimpleMySQL.jar
+ * This class provide connection to MariaDB, store subtrees into DB and provide access to the DB data
+ * Notes: - MariaDB should be set up and run 
+ *  	  - Add to build Path MariaDBConnector: libs/mariadb-java-client-1.2.3.jar
  *  
  * @author Olga Zagovora <zagovora@uni-koblenz.de>
  */
@@ -19,7 +22,7 @@ import simplemysql.SimpleMySQLResult;
 /*adding data into DB:
  * 
  * 
- * StoreToDB x=new StoreToDB();
+ * StoreToMariaDB x=new StoreToMariaDB();
  * 
  * List <MySubTree> subTrees= new ArrayList<MySubTree>();
  * subTrees.add(new MySubTree (0,0,"12.(1345).34"));
@@ -33,45 +36,54 @@ import simplemysql.SimpleMySQLResult;
 /*steps for retrieving data from DB:
  * 
  * 
- * StoreToDB x=new StoreToDB();
- * List <MySubTree> subTrees = x.query ("12.(1%"); //String searchPath
- * x.close();
+ * 
+ * StoreToMariaDB x=new StoreToMariaDB();
+ * 
+ * String SqlString="SELECT * FROM subtree_path WHERE Path LIKE \"12.(1%\" ;";
+ * 
+ * List <MySubTree> subTrees = x.query (SqlString); //String Query
+ * 
  * 
  * for (MySubTree iterator : subTrees) {
  * System.out.println(iterator.path);}
  * 
- * 
+ * x.close();
  * 
  */
 
 
-class StoreToDB implements Storage {
+class StoreToMariaDB implements Storage {
 
 	// JDBC driver name and database URL
 	//static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
-	//static final String DB_URL = "jdbc:mysql://localhost:3306/datamining";
-	static String dbServer = "localhost:3306";
-	static String dbName = "datamining";
+	static String DB_URL = "jdbc:mysql://localhost:3307/datamining";
 	//  Database credentials
+	static String dbName = "datamining";
 	static String user = "admin";
-	static String passwort = "admin";
-	private SimpleMySQL mysql;
-	
+	static String passwort = "";
+	private Connection connection;
+	private Statement stmt;
 	
 	static String TableName="subtree_path";
 	
-	public StoreToDB(){
+	public StoreToMariaDB() throws SQLException{
 		
-		//Initialize 
-		//SimpleMySQL mysql;
-		this.mysql = new SimpleMySQL(); 
-		//Connect to the Database 
+		//Initialize
+		
+		
 		MySQLConnectionInfo config = new MySQLConnectionInfo();
-		dbServer=config.getServer();
+		dbName=config.getDatabaseName();
 		user=config.getUser();
 		passwort=config.getPassword();
-		dbName=config.getDatabaseName();
-		mysql.connect(dbServer,user, passwort, dbName); 
+
+		//Connect to the Database 		
+		try {
+			connection = DriverManager.getConnection(DB_URL, user, passwort);
+			stmt = connection.createStatement();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 
 		//create two tables (one with RDF triples another with graph structure)
@@ -79,20 +91,21 @@ class StoreToDB implements Storage {
 		
 	}
 
-	public void close() {
-		this.mysql.close();
+	public void close() throws SQLException {
+		this.stmt.close();
+		this.connection.close();
 	}
 	
 	
-	private void CreatTables(String TableName1) {
+	private void CreatTables(String TableName1) throws SQLException {
 		String SqlString;
-		
+		//Statement stmt = connection.createStatement();
 		if  ( !CheckIfExist("Bags")){
 			SqlString="CREATE TABLE Bags "
 					+ " (BagID INT NOT NULL AUTO_INCREMENT,"
 					+ " Name VARCHAR(255) NOT NULL,"
 					+ " PRIMARY KEY (BagID) );";
-			mysql.Query (SqlString);
+			stmt.executeUpdate(SqlString);
 			System.out.println("Table Bags is created!");
 			}
 		else {System.out.println("You tried to create table Bags that already exist.");
@@ -108,10 +121,12 @@ class StoreToDB implements Storage {
 					+ " Path VARCHAR(255) NOT NULL,"
 					+ " PRIMARY KEY (Id) ,"
 					+ " FOREIGN KEY (Bag) REFERENCES Bags (BagID) );";
-			mysql.Query (SqlString);
+			stmt.executeUpdate(SqlString);
 			System.out.println("Table "+TableName1+" is created!");
 			}
-		else {System.out.println("You tried to create table "+TableName1+" that already exist.");}		
+		else {System.out.println("You tried to create table "+TableName1+" that already exist.");}	
+		
+		//stmt.close();
 	}
 /*
  * FOREIGN KEY (Bag) REFERENCES Bags(BagID)
@@ -134,33 +149,38 @@ class StoreToDB implements Storage {
     ON UPDATE NO ACTION);
  */
 
-	private boolean CheckIfExist(String TableName) {
+	private boolean CheckIfExist(String TableName) throws SQLException {
 			//check if table exist
-			SimpleMySQLResult res;
+			
 			String str="SELECT * FROM information_schema.tables "
 					+ "WHERE table_schema = '"+dbName+"' AND table_name = '"+TableName+"' "
 					+ "LIMIT 1;";
-			res=mysql.Query(str);
-			if (res.getNumRows()>0) return true;
+			ResultSet res = this.stmt.executeQuery(str);
+			
+			
+			//get number of rows
+			res.last();
+			
+			if (res.getRow()>0) return true;
 			else return false;
 		}
 		
 
 	
-	public void AddPath( int crawl, int bag, int startLvl, int endLvl, String path) {
-		
+	public void AddPath( int crawl, int bag, int startLvl, int endLvl, String path) throws SQLException {
+		//Statement stmt = connection.createStatement();
 		String SqlString="INSERT INTO "+TableName+" (Id, Crawl, Bag, StartLvl, EndLvl, Path) VALUES(null,"+
-		crawl+","+bag+","+startLvl+","+endLvl+","+path+");";
-		mysql.Query(SqlString);		
+		crawl+","+bag+","+startLvl+","+endLvl+",\""+path+"\");";
+		this.stmt.executeUpdate(SqlString);
+		//stmt.close();
 	}
 	
-	public void AddPath( int startLvl, int endLvl, String path) {
+	public void AddPath( int startLvl, int endLvl, String path) throws SQLException {
+		//Statement stmt = connection.createStatement();
 		String SqlString="INSERT INTO "+TableName+" (StartLvl, EndLvl, Path) VALUES( "+startLvl+","+endLvl+","+path+");";
-		mysql.Query(SqlString);		
+		this.stmt.executeUpdate(SqlString);
+		//stmt.close();
 	}
-	
-
-
 	
 	
 	
@@ -168,24 +188,21 @@ class StoreToDB implements Storage {
 	 * Retrieve SubTrees from DB
 	 */
 	
-	public List<MySubTree> query (String Pattern){
+	public List<MySubTree> query (String SqlString){
 		List <MySubTree> SubTrees= new ArrayList<MySubTree>();
-		
-
-		SimpleMySQLResult result;
-		//query DB where Path consist of Pattern
-		String SqlString="SELECT * FROM "+TableName+" WHERE Path LIKE \""+Pattern+"\" ;";
-		result=mysql.Query(SqlString);
 		//store all of the Results
 		try{
+			//Statement stmt = connection.createStatement();
+			//query DB 
+			ResultSet result = this.stmt.executeQuery(SqlString);
+			//stmt.close();
+			
 			while (result.next()){
-				//System.out.println("StartLvl:"+result.getString("StartLvl"));
-				int startLvl=Integer.parseInt(result.getString("StartLvl"));
-				int endLvl=Integer.parseInt(result.getString("EndLvl"));
+				int startLvl=result.getInt("StartLvl");
+				int endLvl=result.getInt("EndLvl");
 				String path=result.getString("Path");
 				SubTrees.add(new MySubTree(startLvl,endLvl,path));
 				}
-			result.close();
 		}
 		catch(Exception x) {
 			x.printStackTrace();}
@@ -199,10 +216,15 @@ class StoreToDB implements Storage {
 	 */
 	
 	public void save (List <MySubTree> subTrees){
-		
 		for (MySubTree element : subTrees) {
-			AddPath(element.startLvl, element.endLvl, element.path);
+			try {
+				AddPath(element.startLvl, element.endLvl, element.path);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
+		
 	}
 	
 	
@@ -218,9 +240,16 @@ class StoreToDB implements Storage {
 		*/
 		
 		for (MySubTree element : subTrees) {
-			AddPath(crawl, bag, element.startLvl, element.endLvl, element.path);
+			try {
+				AddPath(crawl, bag, element.startLvl, element.endLvl, element.path);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
+		
 	}
 	
 }
+
 
