@@ -1,35 +1,48 @@
 package de.unikoblenz.west.lda.subtreeBuilder;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class TreeInserter {
-	//not needed right now, as createTrees gets the full list of trees
+	static //not needed right now, as createTrees gets the full list of trees
 	//Getting or querying found Subtrees and new Path from TreeFilter
 	//List<String> list = TreeFilter.getList();
 	
 	//Finding correct Positions for new Path
+	String parent;
+	
+	//Generate new subtrees containing the new path.
 	
 	public static void createTrees (String path, List<String> list){
-		
+		String nodeToAdd = path.substring(path.length()-1);
 		for(String s : list) {
+			if(!s.contains("/"))  {
+			s = insertNodeToTree(nodeToAdd);
+		}
+		else {
+			s = s.substring(0, s.lastIndexOf("/"));
+			s = insertNodeToTree(nodeToAdd);
+		}
+		}   
 			
-			if(s.matches("^" +Pattern.quote(path) + ".*"))  {
-				List<String> newSubtrees = new ArrayList<String>();
-			    newSubtrees.add(s);
-			}
-			    //String nodeToAdd = path.substring(path.length()-1);
+			//if(s.matches("^" +Pattern.quote(path) + ".*"))  
+			    
 			System.out.println("TI - Path: "+path);
 			System.out.println("TI - Liste: "+list.toString());
 			
-		}
 	}
 	
-	public static String insertNodeToTree(String path, String tree, int depth) {
+	//  add path to existing subtrees.
+	public static String insertNodeToTree(String path) {
+		if(!path.contains("/")) {
+			 String nodeToAdd = path.substring(path.length()-1);
+			
+		}
 		
-		String nodeToAdd = path.substring(path.length()-1);
-		return null;
+			
+				return null;
+	
+	
+		
 	}
 			
 		
@@ -40,18 +53,11 @@ public class TreeInserter {
 	
 	
 	public static void main(String[] args) {
-		String path0 = "1/2";
-		List <String> relevantPath = new ArrayList<String>();
-		String[] paths = {"1/4/6/7", "2/4/8.3", "1.2(3.9)"};
-		for( String path : paths)
-			relevantPath.add(path);
-		createTrees(path0, relevantPath);
+		String path = "1(/2/8/4)7";
+		String s = path.substring(0, path.lastIndexOf("/"));
 		
-		for(String s : relevantPath) {
 		System.out.println(s);
-		
-		System.out.println(s.substring(s.length()-1));
-	}
+		System.out.println(path.substring(path.length()-1));
 	}
 	
 	
