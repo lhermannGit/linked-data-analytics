@@ -2,6 +2,7 @@ package de.unikoblenz.west.lda.subtreeBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class TreeInserter {
@@ -12,6 +13,7 @@ public class TreeInserter {
 	//Finding correct Positions for new Path
 	
 	public static void createTrees (String path, List<String> list){
+		
 		
 		for(String s : list) {
 			
@@ -25,6 +27,8 @@ public class TreeInserter {
 			
 		}
 	}
+	
+	
 	
 	public static String insertNodeToTree(String path, String tree, int depth) {
 		
@@ -51,11 +55,11 @@ public class TreeInserter {
 		System.out.println(s);
 		
 		System.out.println(s.substring(s.length()-1));
+
+		//System.out.println("end");
+		
 	}
-	}
 	
 	
 	
-	//Discarding found Subtrees and saving newly created ones
-	
-}
+}}

@@ -6,8 +6,9 @@ import java.util.regex.Pattern;
 
 public class TreeFilter {
 	// Getting Path from TreeTraversal
-	static String path = "1/1";
+	static String path = "1/1/1/1";
 	//static String queried = "(1/1).2((1.(2/1))).3(1.2)";
+
 	
 
 	// String path = getPath();
@@ -17,14 +18,20 @@ public class TreeFilter {
 	List<String> relevantTrees = new ArrayList<String>();
 	String parent = "";
 
+	
 	public void queryCache(String path) {
 		
+		List<String> queriedPaths = new ArrayList<String>();
+		queriedPaths.add("(1/1).2((1.(2/1))).3(1.2)");
+		queriedPaths.add("1/1/1");
+		queriedPaths.add("2((1.(2/1.2.3.4))).3(1/1/1/1)");
+		queriedPaths.add("(1/1)");
 		
 		if (!path.contains("/")) { // Query Cache with "parent" matched
 			
-			List<String> queriedPaths = new ArrayList<String>();
+			//List<String> queriedPaths = new ArrayList<String>();
 			// queriedPaths = Cache.query(path)
-			queriedPaths.add("(1/1).2((1.(2/1))).3(1.2)");
+			//queriedPaths.add("(1/1).2((1.(2/1))).3(1.2)");
 
 			for (String queried : queriedPaths) {
 				String[] split = splitByPoint(queried); // have to split by points on highest level
@@ -43,14 +50,19 @@ public class TreeFilter {
 				parent = path;
 
 			// query Cache for new path
-			List<String> queriedPaths = new ArrayList<String>();
+			//List<String> queriedPaths = new ArrayList<String>();
 			// queriedPaths = Cache.query(path)
 
+			int i = 0;
 			for (String queried : queriedPaths) {
 				if (queried.matches("^" + "\\(*" + Pattern.quote(parent) + ".*")) {
 					relevantTrees.add(queried);
+					queriedPaths.remove(i);
+					i++;
+					
 				}
 			}
+		
 			// System.out.println("TF - Path: " + path);
 			// System.out.println("TF - Parent: "+parent);
 			queryCache(path);
@@ -79,18 +91,18 @@ public class TreeFilter {
 
 		int dotSize = dotIndices.size();
 		String[] split = new String[dotSize + 1]; // one more path than dots
-		int endIndex = 0;
+		int startIndex = 0;
 		int currentIndex = 0;
 
 		for (int i = 0; i <= dotSize; i++) {
 			if (i != dotSize) { 
 				currentIndex = dotIndices.get(i);
-				split[i] = queried.substring(endIndex, currentIndex);
-				endIndex = currentIndex + 1;
+				split[i] = queried.substring(startIndex, currentIndex);
+				startIndex = currentIndex + 1;
 			}
 
 			else //add last path
-				split[i] = queried.substring(endIndex);
+				split[i] = queried.substring(startIndex);
 
 			System.out.println("Split[" + i + "]= " + split[i]);
 		}
