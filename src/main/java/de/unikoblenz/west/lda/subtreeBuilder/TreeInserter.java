@@ -3,22 +3,30 @@ package de.unikoblenz.west.lda.subtreeBuilder;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class TreeInserter {
+public class TreeInserter 
+{
 	//not needed right now, as createTrees gets the full list of trees
 	//Getting or querying found Subtrees and new Path from TreeFilter
 	//List<String> list = TreeFilter.getList();
 	
 	//Finding correct Positions for new Path
 	
-	public static void createTrees (String path, List<String> list){
+	public static void createTrees (String path, List<String> list)
+	{
 		String parent = "";
         String nodeToAdd = "";
-		if(path.contains("/")) {
+		if(path.contains("/")) 
+		{
 			int index = path.lastIndexOf("/");
 			parent = path.substring(0, index);
 			nodeToAdd = path.substring(index+1);
 			
 		}
+		else 
+		{
+			parent = nodeToAdd = path;
+		}
+		
 		int index = 0;
 		String regex = ("^" + "\\(*" + Pattern.quote(parent) + ".*");
 
