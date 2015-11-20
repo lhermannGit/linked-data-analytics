@@ -1,5 +1,6 @@
 package de.unikoblenz.west.lda.subtreeBuilder;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -10,34 +11,40 @@ public class TreeInserter
 	//List<String> list = TreeFilter.getList();
 	
 	//Finding correct Positions for new Path
+	static List<String> newTrees = new ArrayList<String>();
 	
-	public static void createTrees (String path, List<String> list)
-	{
+	public static void createTrees (String path, List<String> list) {
 		String parent = "";
         String nodeToAdd = "";
-		if(path.contains("/")) 
-		{
+		if(path.contains("/")) {
 			int index = path.lastIndexOf("/");
 			parent = path.substring(0, index);
 			nodeToAdd = path.substring(index+1);
 			
 		}
-		else 
-		{
-			parent = nodeToAdd = path;
+		else {
+			parent = path;
+			nodeToAdd = path;
 		}
-		
+		//String regex = ("^" + "\\(*" + Pattern.quote(parent) + ".*");
 		int index = 0;
-		String regex = ("^" + "\\(*" + Pattern.quote(parent) + ".*");
+		
 
 		for(String s : list) {
 			index = s.indexOf(parent);
 			String part1 = s.substring(0, index + 1);
+			
+			if(part1.matches("^" +Pattern.quote(parent) + ".*")) {
+			
 			String part2 = s.substring(index + 1);
 			String result = part1 + nodeToAdd + part2;
-		}
+			newTrees.add(result);
+			System.out.println(newTrees.toString());
+			
+		   }
+			
 		
-		  
+		}
 			
 			//if(s.matches("^" +Pattern.quote(path) + ".*"))  
 			    
