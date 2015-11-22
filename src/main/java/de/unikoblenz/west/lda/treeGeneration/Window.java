@@ -136,11 +136,11 @@ public class Window {
 					rootNodes.add(newRootNode);
 					newRootNode.addChildNode(newChildNode);
 					size = size + 2;
-					combineTrees(newChildNode, rdfObject, preventLoop);
+					combineTrees(newChildNode, rdfSubject, preventLoop);
 				}
 			} else {
 				size++;
-				combineTrees(newChildNode, rdfObject, preventLoop);
+				combineTrees(newChildNode, rdfSubject, preventLoop);
 			}
 			preventLoop.clear();
 			rdfQuadsCount = rdfQuadsCount + 4;
@@ -153,7 +153,7 @@ public class Window {
 	}
 
 	// combine a tree with added Nodes if needed
-	public void combineTrees(ChildNode newChildNode, int rdfObject, List<ChildNode> preventLoop) {
+	public void combineTrees(ChildNode newChildNode, int rdfSubject, List<ChildNode> preventLoop) {
 		RootNode root;
 		rootNodesIterator = rootNodes.iterator();
 		RootNode rootToDelete = null; // try to get rid of
@@ -161,7 +161,7 @@ public class Window {
 		// look for rootNodes with the same name as rdfObject
 		while (rootNodesIterator.hasNext()) {
 			root = rootNodesIterator.next();
-			if ((rdfObject == root.getName()) && !(newChildNode.getName() == root.getName())) {
+			if ((newChildNode.getName() == root.getName()) && !(newChildNode.getName() == rdfSubject)) {
 				LOG.debug("[start combining trees]");
 				// remove links if needed to prevent loops
 				for (ChildNode child : preventLoop) {
