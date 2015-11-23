@@ -35,6 +35,14 @@ import de.unikoblenz.west.lda.input.MySQLConnectionInfo;
  * x.close();
  */
 
+/*
+ * Perform the Update query[for Adrian's implementation]:
+ * 
+ * StoreToMariaDB x=new StoreToMariaDB();
+ * String YourQuery="";//add necessary query
+ * x.updateQuery(YourQuery); 
+ *  x.close();
+ */
 
 /*steps for retrieving data from DB:
  * 
@@ -73,11 +81,11 @@ class StoreToMariaDB implements Storage {
 		
 		//Initialize
 		
-		
-		MySQLConnectionInfo config = new MySQLConnectionInfo();
-		dbName=config.getDatabaseName();
-		user=config.getUser();
-		passwort=config.getPassword();
+		//commented while you need to have the config.properties file
+		//MySQLConnectionInfo config = new MySQLConnectionInfo();
+		//dbName=config.getDatabaseName();
+		//user=config.getUser();
+		//passwort=config.getPassword();
 		// TODO Add DB_URL in config.properties
 
 		//Connect to the Database 		
@@ -212,6 +220,16 @@ class StoreToMariaDB implements Storage {
 			x.printStackTrace();}
 		
 		return SubTrees;
+	}
+	
+	public void updateQuery (String SqlString){
+		try{
+			//updateQuery 
+			this.stmt.executeUpdate(SqlString);	
+		}
+		catch(Exception x) {
+			x.printStackTrace();}
+		
 	}
 	
 	
