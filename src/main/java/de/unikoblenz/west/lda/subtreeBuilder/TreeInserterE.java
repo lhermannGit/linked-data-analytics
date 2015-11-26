@@ -19,7 +19,7 @@ public class TreeInserterE {
 			
 		}
 		
-		list.add("(1/1).2((1.(2/1))).3(1.2)");
+		list.add("(1/1/1/4).2((1.(2/1))).3(1.2)");
 		int index = 0;
 		
 		String regex = ("^" + "\\(*" + Pattern.quote(parent) + ".*");
@@ -66,7 +66,7 @@ public class TreeInserterE {
 	
 	
 	public static void main(String[] args) {
-		String path = "1/1/1";
+		String path = "1/1/6";
 		List<String> list = new ArrayList<String>();
 	
 		addPaths(path, list);

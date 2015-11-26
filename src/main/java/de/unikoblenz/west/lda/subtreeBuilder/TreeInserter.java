@@ -16,30 +16,61 @@ public class TreeInserter
 	public static void createTrees (String path, List<String> list) {
 		String parent = "";
         String nodeToAdd = "";
+        //int startLvl = 0;
+        //int endLvl = 0;
 		if(path.contains("/")) {
 			int index = path.lastIndexOf("/");
 			parent = path.substring(0, index);
 			nodeToAdd = path.substring(index+1);
 			
+			
+			
+			//endLvl = endLvl + 1; 
+			
 		}
-		else {
-			parent = path;
-			nodeToAdd = path;
-		}
-		//String regex = ("^" + "\\(*" + Pattern.quote(parent) + ".*");
+		//else {
+			//parent = path;       // if path doesn't contain a "/", his ancestor is the root node.
+			//nodeToAdd = path;
+			
+			//startLvl = path.lastIndexOf("/");
+			//endLvl = startLvl + 1;
+			
+			
+			
+		
+		//String regex = ("^" + "\\(*" +Pattern.quote(parent) + ".*");
 		int index = 0;
+		String part1 = "";
+		String part2 = "";
+		String result = "";
 		
 
 		for(String s : list) {
 			index = s.indexOf(parent);
-			String part1 = s.substring(0, index + 1);
 			
+			//check the level to add the new path.
+			part1 = s.substring(0, index + 1);
+			part2 = s.substring(index + 1);
 			if(part1.matches("^" +Pattern.quote(parent) + ".*")) {
+				
+			 result = part1 +"/" + nodeToAdd + part2;
+				newTrees.add(result);
+				System.out.println(newTrees.toString());
+				
+				
+			}
+			else {
+				part1 = s +".";
+				result = part1 +nodeToAdd;
+				newTrees.add(result);
+				//newTrees.add(nodeToAdd);
+				System.out.println(nodeToAdd);
+				System.out.println(part1);
+				System.out.println(result);
+				System.out.println(newTrees.toString());
+				
 			
-			String part2 = s.substring(index + 1);
-			String result = part1 + nodeToAdd + part2;
-			newTrees.add(result);
-			System.out.println(newTrees.toString());
+			
 			
 		   }
 			
@@ -74,15 +105,17 @@ public class TreeInserter
 	
 	
 	public static void main(String[] args) {
-		String path = "1/2/8/4/(7.2(2.1))";
-		int index = path.lastIndexOf("/") ;
-		String parent = path.substring(0, index);
-		String child = path.substring(index+1);
-		String s = "";
+		String path = "1/1/8/4/7";
+		List<String> list = new ArrayList<String>();
+		list.add("1/1/8/4.2.3.5");
+		list.add("3");
+		list.add("1");
+		list.add("2");
 		
-		System.out.println(parent);
-		System.out.println(child);
-		System.out.println(s.indexOf(parent));
+		
+		createTrees(path, list);
+		
+		
 		
 	}
 	
