@@ -1,11 +1,11 @@
 package de.unikoblenz.west.lda.input;
 
+import gnu.trove.map.hash.TIntIntHashMap;
+
 import java.util.ArrayList;
 
 import de.unikoblenz.west.lda.input.LookupCache.Cache;
 import de.unikoblenz.west.lda.input.LookupCache.Table;
-import gnu.trove.map.hash.TIntIntHashMap;
-import simplemysql.SimpleMySQL;
 
 public class InputReduction {
 
@@ -19,7 +19,8 @@ public class InputReduction {
 	public InputReduction(int upperBound, String prefix) {
 		SimpleMySQL database = SimpleMySQL.getInstance();
 		MySQLConnectionInfo config = new MySQLConnectionInfo();
-		database.connect(config.getServer(), config.getUser(), config.getPassword(), config.getDatabaseName());
+		database.connect(config.getServer(), config.getUser(),
+				config.getPassword(), config.getDatabaseName());
 
 		predicates = new LookupCache(upperBound, Table.predicates, prefix);
 		objects = new LookupCache(upperBound, Table.objects, prefix);
@@ -28,7 +29,7 @@ public class InputReduction {
 	private int existsWithinSets(int id) {
 		int offset = 0;
 
-		// TODO traverse in reverse order instead
+		// TODO traverse in reverse order instead(check)
 		for (DisjointSet set : sets) {
 			if (set.has(id))
 				return offset;

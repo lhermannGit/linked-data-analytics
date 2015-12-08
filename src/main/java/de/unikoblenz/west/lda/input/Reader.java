@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
-import org.apache.commons.lang.StringEscapeUtils;
 
+import org.apache.commons.lang.StringEscapeUtils;
 
 // supposed to be running in a thread - each with a different data crawl
 public class Reader {
@@ -27,8 +27,10 @@ public class Reader {
 
 	// consume the feed
 	public List<DisjointSet> read() throws IOException {
-		InputReduction reduce = new InputReduction(10000,StringEscapeUtils.escapeSql(file.getName()));
-		BufferedReader in = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(file))));
+		InputReduction reduce = new InputReduction(10000,
+				StringEscapeUtils.escapeSql(file.getName()));
+		BufferedReader in = new BufferedReader(new InputStreamReader(
+				new GZIPInputStream(new FileInputStream(file))));
 
 		String line;
 
@@ -38,13 +40,16 @@ public class Reader {
 			while (regexMatcher.find()) {
 				if (regexMatcher.group(1) != null) {
 					// Add double-quoted string without the quotes
-					matchList.add(regexMatcher.group(1).replace("\n", "").trim());
+					matchList.add(regexMatcher.group(1).replace("\n", "")
+							.trim());
 				} else if (regexMatcher.group(2) != null) {
 					// Add single-quoted string without the quotes
-					matchList.add(regexMatcher.group(2).replace("\n", "").trim());
+					matchList.add(regexMatcher.group(2).replace("\n", "")
+							.trim());
 				} else {
 					// Add unquoted word
-					matchList.add(regexMatcher.group().replace("\n", "").trim());
+					matchList
+							.add(regexMatcher.group().replace("\n", "").trim());
 				}
 			}
 
@@ -53,5 +58,6 @@ public class Reader {
 		in.close();
 		reduce.commit();
 		return reduce.getSets();
+
 	}
 }
