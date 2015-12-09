@@ -55,15 +55,15 @@ import de.unikoblenz.west.lda.input.MySQLConnectionInfo;
  */
 
 
-class StoreToMariaDB implements Storage {
+public class StoreToMariaDB implements Storage {
 
 	// JDBC driver name and database URL
 	//static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
 	static String DB_URL = "jdbc:mysql://localhost:3307/datamining";
 	//  Database credentials
 	static String dbName = "datamining";
-	static String user = "admin";
-	static String passwort = "";
+	static String user = "root";
+	static String passwort = "1234";
 	private Connection connection;
 	private Statement stmt;
 	
@@ -74,10 +74,10 @@ class StoreToMariaDB implements Storage {
 		//Initialize
 		
 		
-		MySQLConnectionInfo config = new MySQLConnectionInfo();
-		dbName=config.getDatabaseName();
-		user=config.getUser();
-		passwort=config.getPassword();
+		//MySQLConnectionInfo config = new MySQLConnectionInfo();
+		//dbName=config.getDatabaseName();
+		//user=config.getUser();
+		//passwort=config.getPassword();
 		// TODO Add DB_URL in config.properties
 
 		//Connect to the Database 		
@@ -252,6 +252,19 @@ class StoreToMariaDB implements Storage {
 			}
 		}
 		
+	}
+
+	public ResultSet anyQuery(String SqlString){
+		ResultSet result = null;
+		try{
+			//Statement stmt = connection.createStatement();
+			//query DB 
+			result = this.stmt.executeQuery(SqlString);
+		}
+		catch(Exception x) {
+			x.printStackTrace();}
+		
+		return result;
 	}
 	
 }
