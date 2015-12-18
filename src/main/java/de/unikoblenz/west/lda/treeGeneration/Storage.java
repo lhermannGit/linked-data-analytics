@@ -2,11 +2,35 @@ package de.unikoblenz.west.lda.treeGeneration;
 
 import java.util.List;
 
-// interface to be implemented by Cache and DB
+
+class MySubTree {
+    int startLvl;
+    int endLvl;
+    String path;
+
+    public MySubTree(int startLvl,int endLvl, String path) {
+        this.startLvl = startLvl;
+        this.endLvl = endLvl;
+        this.path = path;
+    }
+}
+
+
 public interface Storage {
-
-	public List<Subtree> query(String path);
-
-	public void save(List<Subtree> subtrees);
-
+	
+	public List<MySubTree> query (String Pattern);
+	
+	
+	/*
+	 * store only path, startLvl and endlvl
+	 */
+	
+	public void save (List <MySubTree> subTrees);
+	
+	
+	/*
+	 * store all fields in the Table including bag and crawl id
+	 */
+	
+	public void save (List <MySubTree> subTrees, int crawl, int bag);
 }
