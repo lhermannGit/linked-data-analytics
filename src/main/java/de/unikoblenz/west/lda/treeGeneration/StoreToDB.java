@@ -87,15 +87,31 @@ class StoreToDB implements Storage {
 	private void CreatTables(String TableName1) {
 		String SqlString;
 		
-		if  ( !CheckIfExist("Bags")){
-			SqlString="CREATE TABLE Bags "
-					+ " (BagID INT NOT NULL AUTO_INCREMENT,"
+		if  ( !CheckIfExist("Crawls")){
+			SqlString="CREATE TABLE Crawls "
+					+ " (CrawlID INT NOT NULL AUTO_INCREMENT,"
 					+ " Name VARCHAR(255) NOT NULL,"
-					+ " PRIMARY KEY (BagID) );";
+					+ " PRIMARY KEY (CrawlID) );";
 			mysql.Query (SqlString);
-			System.out.println("Table Bags is created!");
+			System.out.println("Table Crawls is created!");
 			}
-		else {System.out.println("You tried to create table Bags that already exist.");
+		else {System.out.println("You tried to create table Crawls that already exist.");
+		}
+		
+		if  ( !CheckIfExist("Trees")){
+			SqlString="CREATE TABLE Trees "
+					+ " (TreeID INT NOT NULL AUTO_INCREMENT,"
+					+ " BagID INT NULL,"
+					+ " Current INT NOT NULL,"
+					+ " Parent INT NULL,"
+					+ " Predicate INT NULL,"
+					+ " Child_No INT NULL,"
+					+ " Lvl INT NULL,"
+					+ " PRIMARY KEY (TreeID) );";
+			mysql.Query (SqlString);
+			System.out.println("Table Trees is created!");
+			}
+		else {System.out.println("You tried to create table Trees that already exist.");
 		}
 		
 		if  ( !CheckIfExist(TableName1)){
@@ -107,7 +123,7 @@ class StoreToDB implements Storage {
 					+ " EndLvl INT NOT NULL,"
 					+ " Path VARCHAR(255) NOT NULL,"
 					+ " PRIMARY KEY (Id) ,"
-					+ " FOREIGN KEY (Bag) REFERENCES Bags (BagID) );";
+					+ " FOREIGN KEY (Crawl) REFERENCES Crawls (CrawlID) );";
 			mysql.Query (SqlString);
 			System.out.println("Table "+TableName1+" is created!");
 			}
