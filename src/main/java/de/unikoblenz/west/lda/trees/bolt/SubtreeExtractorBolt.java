@@ -53,6 +53,7 @@ public class SubtreeExtractorBolt extends BaseRichBolt {
 		TreeTraversal traversal = new TreeTraversal();
 		SubtreeBuilder builder = new SubtreeBuilder();
 		Database db = new Database();
+		db.Initialize(rootNode);
 		Cache cache = new Cache();
 		traversal.Initialize(rootNode);
 		builder.Initialize(db, cache);

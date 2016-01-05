@@ -5,15 +5,27 @@ import java.util.List;
 public class Database implements Storage {
 
 	@Override
-	public List<Subtree> query(String path) {
+	public void Initialize(RootNode rootNode) {
 		// TODO Auto-generated method stub
-		return null;
+
 	}
 
 	@Override
-	public void save(List<Subtree> subtrees) {
+	public void save(List<MySubTree> subTrees) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void save(List<MySubTree> subTrees, int crawl, int bag) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public List<MySubTree> query(String Pattern) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
