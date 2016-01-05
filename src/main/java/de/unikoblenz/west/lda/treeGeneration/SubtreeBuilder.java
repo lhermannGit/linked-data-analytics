@@ -1,11 +1,11 @@
 package de.unikoblenz.west.lda.treeGeneration;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SubtreeBuilder implements ISubtreeBuilder {
 
-	@Override
-	public List<Subtree> buildTrees(String path) {
+	public List<Subtree> buildTrees(ArrayList<Integer> path) {
 		// TODO Auto-generated method stub
 		return null;
 	}

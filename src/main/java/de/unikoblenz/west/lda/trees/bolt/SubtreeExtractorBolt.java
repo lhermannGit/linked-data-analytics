@@ -1,5 +1,6 @@
 package de.unikoblenz.west.lda.trees.bolt;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 import backtype.storm.task.OutputCollector;
@@ -59,7 +60,7 @@ public class SubtreeExtractorBolt extends BaseRichBolt {
 		builder.Initialize(db, cache);
 
 		while (true) {
-			String path = traversal.getNextPath();
+			ArrayList<Integer> path = traversal.getNextPath();
 			if (path == null)
 				break;
 			builder.buildTrees(path);

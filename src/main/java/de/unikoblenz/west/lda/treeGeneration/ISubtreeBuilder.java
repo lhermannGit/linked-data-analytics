@@ -1,5 +1,6 @@
 package de.unikoblenz.west.lda.treeGeneration;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public interface ISubtreeBuilder {
@@ -13,6 +14,6 @@ public interface ISubtreeBuilder {
 	 * the new Subtrees, adding the last connection in path 4) Return all new
 	 * Subtrees
 	 */
-	public List<Subtree> buildTrees(String path);
+	public List<Subtree> buildTrees(ArrayList<Integer> path);
 
 }
