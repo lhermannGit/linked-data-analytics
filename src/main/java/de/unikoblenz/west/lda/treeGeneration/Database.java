@@ -1,6 +1,7 @@
 package de.unikoblenz.west.lda.treeGeneration;
 
 import java.util.List;
+import java.sql.ResultSet;
 
 public class Database implements Storage {
 
@@ -24,6 +25,12 @@ public class Database implements Storage {
 
 	@Override
 	public List<MySubTree> query(String Pattern) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ResultSet anyQuery(String Pattern) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -55,15 +55,15 @@ public class SubtreeExtractorBolt extends BaseRichBolt {
 		SubtreeBuilder builder = new SubtreeBuilder();
 		Database db = new Database();
 		db.Initialize(rootNode);
-		Cache cache = new Cache();
+		//Cache cache = new Cache();
 		traversal.Initialize(rootNode);
-		builder.Initialize(db, cache);
+		builder.Initialize(db/*, cache*/);
 
 		while (true) {
 			ArrayList<Integer> path = traversal.getNextPath();
 			if (path == null)
 				break;
-			builder.buildTrees(path);
+			builder.buildTrees(path, db);
 		}
 
 		this.collector.ack(tuple);
