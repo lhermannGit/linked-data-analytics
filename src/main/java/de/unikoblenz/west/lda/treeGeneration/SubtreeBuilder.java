@@ -56,8 +56,8 @@ public class SubtreeBuilder implements ISubtreeBuilder {
 		
 		System.out.println("\nInsert: " + path.toString() + ", Regexp: " + re);
 		
-		// get all relevant subtrees and already create its new subtree via REGEXP_REPLACE
-		ResultSet res = db.anyQuery("SELECT StartLvl, EndLvl, Path, REGEXP_REPLACE(Path, '" + re + n + "', '\\\\0" + path.get(path.size() - 1) + "\\(\\)') AS NewPath FROM subtree_path WHERE StartLvl = 0 AND Path REGEXP '" + re + "';");
+		// get all relevant subtrees
+		ResultSet res = db.getSubtrees(re, re + n, path.get(path.size() - 1));
 		if (res == null)
 			System.out.println("ERROR on SELECT");
 		else
@@ -65,13 +65,13 @@ public class SubtreeBuilder implements ISubtreeBuilder {
 				// for each relevant subtree
 				while (res.next()) {
 					// increment EndLvl if necessary
-					int EndLvl = res.getInt("EndLvl");
-					if (EndLvl < path.size() - 1)
-						EndLvl++;
+					int endLvl = res.getInt("EndLvl");
+					if (endLvl < path.size() - 1)
+						endLvl++;
 					
 					// insert new subtree
-					ResultSet res2 = db.anyQuery("INSERT INTO subtree_path (StartLvl, EndLvl, Path) VALUES (0, " + EndLvl + ", '" + res.getString("NewPath") + "');");
-					if (res2 == null)
+					boolean qry = db.saveSubtree(1, 1, 0, endLvl, res.getString("NewPath")); // TODO real Crawl & Bag
+					if (!qry)
 						System.out.println("ERROR on Insert: " + res.getString("NewPath"));
 					else
 						System.out.println("Selected: " + res.getString("Path") + " - Inserted: " + res.getString("NewPath"));
@@ -86,8 +86,8 @@ public class SubtreeBuilder implements ISubtreeBuilder {
 		// insert new subtree if path has only one element
 		if (path.size() == 1) {
 			String newPath = path.get(0) + "()";
-			ResultSet res2 = db.anyQuery("INSERT INTO subtree_path (StartLvl, EndLvl, Path) VALUES (0, 0, '" + newPath + "')");
-			if (res2 == null)
+			boolean qry = db.saveSubtree(1, 1, 0, 0, newPath); // TODO real Crawl & Bag
+			if (!qry)
 				System.out.println("ERROR on Create: " + newPath);
 			else
 				System.out.println("Created: " + newPath);
@@ -96,8 +96,9 @@ public class SubtreeBuilder implements ISubtreeBuilder {
 	
 	public void Initialize(Database db) {
 		// empty table
-		db.anyQuery("TRUNCATE `subtree_path`;");
-		System.out.println("Emptied table 'subtree_path'. Create subtrees...");
+		//db.anyQuery("TRUNCATE `subtree_path`;");
+		//System.out.println("Emptied table 'subtree_path'.");
+		System.out.println("Insert subtrees into the database...");
 	}
 
 }

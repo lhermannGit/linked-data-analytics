@@ -9,7 +9,6 @@ import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseRichBolt;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
-import de.unikoblenz.west.lda.treeGeneration.Cache;
 import de.unikoblenz.west.lda.treeGeneration.Database;
 import de.unikoblenz.west.lda.treeGeneration.RootNode;
 import de.unikoblenz.west.lda.treeGeneration.SubtreeBuilder;

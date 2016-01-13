@@ -45,7 +45,7 @@ import simplemysql.SimpleMySQLResult;
  */
 
 
-class StoreToDB implements Storage {
+class StoreToDB implements IDatabase {
 
 	// JDBC driver name and database URL
 	//static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  

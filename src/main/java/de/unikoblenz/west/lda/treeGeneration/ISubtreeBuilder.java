@@ -8,10 +8,9 @@ public interface ISubtreeBuilder {
 	public void Initialize(Database db);
 
 	/*
-	 * 1) Queries the Cache/DB for all relevant Subtrees for the parameter path
-	 * 2) Filter the returned Subtrees for the actually needed Subtrees 3) Build
-	 * the new Subtrees, adding the last connection in path 4) Return all new
-	 * Subtrees
+	 * 1) queries the database for all relevant subtrees for the parameter path
+	 * 2) builds new subtrees from the selected subtrees, adding the last connection in path
+	 * 3) builds new subtrees with adjusted start level
 	 */
 	public void buildTrees(ArrayList<Integer> path, Database db);
 
