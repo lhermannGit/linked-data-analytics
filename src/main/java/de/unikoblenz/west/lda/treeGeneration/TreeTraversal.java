@@ -5,24 +5,21 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-public class TreeTraversal implements ITreeTraversal {
+public class TreeTraversal {
 
-	public TreeTraversal(){
-		queueNodes = new LinkedList<Node>();
-		queuePairs = new LinkedList<ArrayList<Integer>>();
-		queuePath = new LinkedList<ArrayList<Integer>>();
-		children = new LinkedList<ChildNode>();
-		currentPath = new ArrayList<Integer>();
-	}
-	
 	private Queue<Node> queueNodes;
 	private Queue<ArrayList<Integer>> queuePath;
 	private Queue<ArrayList<Integer>> queuePairs;
 	private List<ChildNode> children;
 	private ArrayList<Integer> currentPath;
 	
-	
-	public void Initialize(RootNode rootNode) {
+	public TreeTraversal(RootNode rootNode){
+		queueNodes = new LinkedList<Node>();
+		queuePairs = new LinkedList<ArrayList<Integer>>();
+		queuePath = new LinkedList<ArrayList<Integer>>();
+		children = new LinkedList<ChildNode>();
+		currentPath = new ArrayList<Integer>();
+		
 		queueNodes.clear();
 	    queuePath.clear();
 	    queuePairs.clear();
@@ -31,7 +28,8 @@ public class TreeTraversal implements ITreeTraversal {
 		queuePath.clear();
 	    currentPath.clear();
 	}
-
+	
+	// Returns null if all paths are exhausted
 	public ArrayList<Integer> getNextPath() {
 		ArrayList<Integer> helper;
 		if (queuePairs.isEmpty()){

@@ -17,7 +17,7 @@ import java.sql.Statement;
  * @author Olga Zagovora <zagovora@uni-koblenz.de>
  */
 
-public class Database implements IDatabase {
+public class Database {
 
 	// JDBC driver name and database URL
 	//static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
@@ -31,7 +31,7 @@ public class Database implements IDatabase {
 	
 	static String tableName="subtree_path";
 	
-	public Database() {
+	public Database(RootNode rootNode) {
 		// initialize
 		
 		// commented because you need to have the config.properties file
@@ -52,10 +52,6 @@ public class Database implements IDatabase {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-
-	public void Initialize(RootNode rootNode) {
-		// TODO Auto-generated method stub
 	}
 
 	// checks if a database table exists

@@ -48,15 +48,9 @@ public class SubtreeExtractorBolt extends BaseRichBolt {
 		// this.collector.emit(tuple, new Values(subtrees));
 		// System.out.println("Size of list: "+subtrees.size());
 
-		// TODO Create Cache and DB connection
-
-		TreeTraversal traversal = new TreeTraversal();
-		SubtreeBuilder builder = new SubtreeBuilder();
-		Database db = new Database();
-		db.Initialize(rootNode);
-		//Cache cache = new Cache();
-		traversal.Initialize(rootNode);
-		builder.Initialize(db/*, cache*/);
+		TreeTraversal traversal = new TreeTraversal(rootNode);
+		Database db = new Database(rootNode);
+		SubtreeBuilder builder = new SubtreeBuilder(db);
 
 		while (true) {
 			ArrayList<Integer> path = traversal.getNextPath();

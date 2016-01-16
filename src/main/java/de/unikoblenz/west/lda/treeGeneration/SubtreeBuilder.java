@@ -4,14 +4,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class SubtreeBuilder implements ISubtreeBuilder {
-	
-	public SubtreeBuilder() {
-		
-	}
+public class SubtreeBuilder {
 
 	// subpattern of regular expression for nested int & parenthesis
-	String nes =
+	private String nes =
 		"(" +					// start group 1 (for recursion)
 			"(" +				// start group 2 (allow neighbours)
 	         	"[0-9]+" +		// match the int
@@ -21,7 +17,18 @@ public class SubtreeBuilder implements ISubtreeBuilder {
 	        ")*" +				// end group 2
 		")";					// end group 1
 	
-	// creates all new subtrees from a given path and inserts them into the database
+	public SubtreeBuilder(Database db) {
+		// empty table
+		//db.anyQuery("TRUNCATE `subtree_path`;");
+		//System.out.println("Emptied table 'subtree_path'.");
+		System.out.println("Insert subtrees into the database...");
+	}
+
+	/*
+	 * 1) queries the database for all relevant subtrees for the parameter path
+	 * 2) builds new subtrees from the selected subtrees, adding the last connection in path
+	 * 3) builds new subtrees with adjusted start level
+	 */
 	public void buildTrees(ArrayList<Integer> path, Database db) {
 		/*
 		 * below is an approach to make use of a named subroutine to shorten the whole query string
@@ -93,12 +100,4 @@ public class SubtreeBuilder implements ISubtreeBuilder {
 				System.out.println("Created: " + newPath);
 		}
 	}
-	
-	public void Initialize(Database db) {
-		// empty table
-		//db.anyQuery("TRUNCATE `subtree_path`;");
-		//System.out.println("Emptied table 'subtree_path'.");
-		System.out.println("Insert subtrees into the database...");
-	}
-
 }
