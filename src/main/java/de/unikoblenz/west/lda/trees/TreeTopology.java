@@ -25,8 +25,8 @@ public class TreeTopology {
 		    TopologyBuilder builder = new TopologyBuilder();
 		    
 		    //Amount of Threads per Bolt should be changed
-		    builder.setSpout("InputSpout", new RDFSpout(), 10);
-		    builder.setBolt("TreeCreatorBolt", new TreeCreatorBolt(), 3).shuffleGrouping("InputSpout");
+		    builder.setSpout("RDFSpout", new RDFSpout(), 10);
+		    builder.setBolt("TreeCreatorBolt", new TreeCreatorBolt(), 3).shuffleGrouping("RDFSpout");
 		    builder.setBolt("SubtreeExtractorBolt", new SubtreeExtractorBolt(), 2).shuffleGrouping("TreeCreatorBolt");
 		    builder.setBolt("SubtreeCounterBolt", new SubtreeCounterBolt(), 2).shuffleGrouping("SubtreeExtractorBolt");
 		    builder.setBolt("SubtreeFiltererBolt", new SubtreeFiltererBolt(), 2).shuffleGrouping("SubtreeCounterBolt");

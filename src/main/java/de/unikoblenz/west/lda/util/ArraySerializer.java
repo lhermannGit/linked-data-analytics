@@ -17,7 +17,7 @@ public class ArraySerializer {
 	public static void main(String[] args) {
 	    //deserialize the quarks.ser file
 	    try(
-	      InputStream file = new FileInputStream("/home/martin/output-test.ser");
+	      InputStream file = new FileInputStream("/home/martin/output-test.ser"); // TODO path
 	      InputStream buffer = new BufferedInputStream(file);
 	      ObjectInput input = new ObjectInputStream (buffer);
 	    ){

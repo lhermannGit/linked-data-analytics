@@ -1,6 +1,5 @@
 package de.unikoblenz.west.lda.trees.bolt;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -13,7 +12,6 @@ import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseRichBolt;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
-import backtype.storm.tuple.Values;
 
 /**
  * 
