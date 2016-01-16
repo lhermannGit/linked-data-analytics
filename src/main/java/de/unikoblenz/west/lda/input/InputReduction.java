@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import de.unikoblenz.west.lda.input.LookupCache.Cache;
 import de.unikoblenz.west.lda.input.LookupCache.Table;
+import de.unikoblenz.west.lda.treeGeneration.Database;
 
 public class InputReduction {
 
@@ -17,13 +18,9 @@ public class InputReduction {
 	LookupCache objects;
 
 	public InputReduction(int upperBound, String prefix) {
-		SimpleMySQL database = SimpleMySQL.getInstance();
-		MySQLConnectionInfo config = new MySQLConnectionInfo();
-		database.connect(config.getServer(), config.getUser(),
-				config.getPassword(), config.getDatabaseName());
-
-		predicates = new LookupCache(upperBound, Table.predicates, prefix);
-		objects = new LookupCache(upperBound, Table.objects, prefix);
+		Database db = new Database();
+		predicates = new LookupCache(upperBound, Table.predicates, prefix, db);
+		objects = new LookupCache(upperBound, Table.objects, prefix, db);
 	}
 
 	private int existsWithinSets(int id) {

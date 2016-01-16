@@ -49,14 +49,14 @@ public class SubtreeExtractorBolt extends BaseRichBolt {
 		// System.out.println("Size of list: "+subtrees.size());
 
 		TreeTraversal traversal = new TreeTraversal(rootNode);
-		Database db = new Database(rootNode);
+		Database db = new Database();
 		SubtreeBuilder builder = new SubtreeBuilder(db);
 
 		while (true) {
 			ArrayList<Integer> path = traversal.getNextPath();
 			if (path == null)
 				break;
-			builder.buildTrees(path, db);
+			builder.buildTrees(path);
 		}
 
 		this.collector.ack(tuple);

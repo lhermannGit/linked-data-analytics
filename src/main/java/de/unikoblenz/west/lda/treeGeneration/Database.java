@@ -31,7 +31,7 @@ public class Database {
 	
 	static String tableName="subtree_path";
 	
-	public Database(RootNode rootNode) {
+	public Database() {
 		// initialize
 		
 		// commented because you need to have the config.properties file
@@ -115,7 +115,7 @@ public class Database {
 	 */
 
 	// runs any query string on the database
-	public ResultSet anyQuery(String Pattern) {
+	public ResultSet query(String Pattern) {
 		ResultSet result = null;
 		try{
 			result = this.stmt.executeQuery(Pattern);
@@ -128,18 +128,23 @@ public class Database {
 
 	// returns all relevant subtrees and already create its new subtree via REGEXP_REPLACE
 	public ResultSet getSubtrees(String regexp1, String regexp2, int newVal) {
-		return this.anyQuery("SELECT StartLvl, EndLvl, Path, REGEXP_REPLACE(Path, '" + regexp2 + "', '\\\\0" + newVal + "\\(\\)') AS NewPath FROM subtree_path WHERE StartLvl = 0 AND Path REGEXP '" + regexp1 + "';");
+		return this.query("SELECT StartLvl, EndLvl, Path, REGEXP_REPLACE(Path, '" + regexp2 + "', '\\\\0" + newVal + "\\(\\)') AS NewPath FROM subtree_path WHERE StartLvl = 0 AND Path REGEXP '" + regexp1 + "';");
 	}
 	
 	// inserts a subtree into the database
 	public boolean saveSubtree(int crawl, int bag, int startLvl, int endLvl, String path) {
-		ResultSet rs = this.anyQuery("INSERT INTO subtree_path (Crawl, Bag, StartLvl, EndLvl, Path) VALUES (" + crawl + ", " + bag + ", " + startLvl + ", " + endLvl + ", '" + path + "');");
+		ResultSet rs = this.query("INSERT INTO subtree_path (Crawl, Bag, StartLvl, EndLvl, Path) VALUES (" + crawl + ", " + bag + ", " + startLvl + ", " + endLvl + ", '" + path + "');");
 		return rs != null;
 	}
 	
 	// closes the database connection
-	public void close() throws SQLException {
-		this.stmt.close();
-		this.connection.close();
+	public void close() {
+		try {
+			this.stmt.close();
+			this.connection.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

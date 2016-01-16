@@ -6,6 +6,8 @@ import java.util.ArrayList;
 
 public class SubtreeBuilder {
 
+	private Database db;
+	
 	// subpattern of regular expression for nested int & parenthesis
 	private String nes =
 		"(" +					// start group 1 (for recursion)
@@ -18,6 +20,7 @@ public class SubtreeBuilder {
 		")";					// end group 1
 	
 	public SubtreeBuilder(Database db) {
+		this.db = db;
 		// empty table
 		//db.anyQuery("TRUNCATE `subtree_path`;");
 		//System.out.println("Emptied table 'subtree_path'.");
@@ -29,7 +32,7 @@ public class SubtreeBuilder {
 	 * 2) builds new subtrees from the selected subtrees, adding the last connection in path
 	 * 3) builds new subtrees with adjusted start level
 	 */
-	public void buildTrees(ArrayList<Integer> path, Database db) {
+	public void buildTrees(ArrayList<Integer> path) {
 		/*
 		 * below is an approach to make use of a named subroutine to shorten the whole query string
 		 * instead of the long nes-string above only (?&nes) would have to be inserted into the regular expression

@@ -6,10 +6,9 @@ import java.sql.SQLException;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 import de.unikoblenz.west.lda.input.util.CharArrHashingStrategy;
+import de.unikoblenz.west.lda.treeGeneration.Database;
 import gnu.trove.iterator.TObjectIntIterator;
 import gnu.trove.map.custom_hash.TObjectIntCustomHashMap;
-import simplemysql.SimpleMySQL;
-import simplemysql.SimpleMySQLResult;
 
 public class LookupCache {
 
@@ -27,14 +26,14 @@ public class LookupCache {
 
 	protected int upperBound;
 	protected boolean databaseEmpty = true;
-	protected SimpleMySQL database;
+	protected Database db;
 	protected String table;
 
-	public LookupCache(int upperBound, Table table, String prefix) {
+	public LookupCache(int upperBound, Table table, String prefix, Database db) {
 		objects_recent = new TObjectIntCustomHashMap<char[]>(CharArrHashingStrategy.create(), upperBound / 2);
 		objects_old = new TObjectIntCustomHashMap<char[]>(CharArrHashingStrategy.create(), upperBound / 2);
 		this.upperBound = upperBound / 2;
-		this.database = SimpleMySQL.getInstance();
+		this.db = db;
 
 		switch (table) {
 		case objects:
@@ -44,8 +43,8 @@ public class LookupCache {
 			this.table = prefix + "predicates";
 			break;
 		}
-		database.Query("DROP TABLE " + this.table);
-		database.Query("CREATE TABLE " + this.table + " (k text, v int )");
+		db.query("DROP TABLE " + this.table);
+		db.query("CREATE TABLE " + this.table + " (k text, v int )");
 	}
 
 	public int get(char[] tupleElem) {
@@ -61,18 +60,15 @@ public class LookupCache {
 		}
 		if (!databaseEmpty) {
 			// System.out.println(table + ": looking in DB");
-			SimpleMySQLResult simpleRset = (database.Query("SELECT v FROM " + table + " WHERE k ='"
-					+ StringEscapeUtils.escapeJava(String.copyValueOf(tupleElem).replace("\n", "")) + "'"));
-			ResultSet rset = null;
-			if (simpleRset == null)
+			ResultSet res = db.query("SELECT v FROM " + table + " WHERE k ='"
+					+ StringEscapeUtils.escapeJava(String.copyValueOf(tupleElem).replace("\n", "")) + "'");
+			if (res == null)
 				return Integer.MIN_VALUE;
-			else
-				rset = simpleRset.getResultSet();
 
 			try {
-				while (rset.next()) {
+				while (res.next()) {
 					// System.out.println("found in DB");
-					return rset.getInt("v");
+					return res.getInt("v");
 				}
 			} catch (SQLException e) {
 				System.out.println("Problem retrieving value from table!");
@@ -135,7 +131,7 @@ public class LookupCache {
 		// System.out.println(query);
 		// System.out.println("Inserting :" + i + "elements into " + table);
 		if (i > 0)
-			database.Query(query);
+			db.query(query);
 		databaseEmpty = false;
 	}
 
