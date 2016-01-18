@@ -31,7 +31,7 @@ public class Database {
 	
 	static String tableName="subtree_path";
 	
-	public Database() {
+	public Database(RootNode rootNode) {
 		// initialize
 		
 		// commented because you need to have the config.properties file
@@ -70,15 +70,15 @@ public class Database {
 	// creates necessary tables
 	private void createTables(String tableName) throws SQLException {
 		String sqlString;
-		if  (!tableExists("Bags")){
-			sqlString="CREATE TABLE Bags "
-					+ " (BagID INT NOT NULL AUTO_INCREMENT,"
+		if  (!tableExists("Crawls")){
+			sqlString="CREATE TABLE Crawls "
+					+ " (CrawlID INT NOT NULL AUTO_INCREMENT,"
 					+ " Name VARCHAR(255) NOT NULL,"
 					+ " PRIMARY KEY (BagID) );";
 			stmt.executeUpdate(sqlString);
-			System.out.println("Table Bags was created.");
+			System.out.println("Table Crawls was created.");
 		} else
-			System.out.println("No need to create table Bags (already exists).");
+			System.out.println("No need to create table Crawls (already exists).");
 		
 		if  (!tableExists(tableName)){
 			sqlString="CREATE TABLE "+tableName+" "
@@ -89,7 +89,7 @@ public class Database {
 					+ " EndLvl INT NOT NULL,"
 					+ " Path VARCHAR(255) NOT NULL,"
 					+ " PRIMARY KEY (Id) ,"
-					+ " FOREIGN KEY (Bag) REFERENCES Bags (BagID) );";
+					+ " FOREIGN KEY (Crawl) REFERENCES Crawls (CrawlID) );";
 			stmt.executeUpdate(sqlString);
 			System.out.println("Table "+tableName+" is created!");
 		} else
