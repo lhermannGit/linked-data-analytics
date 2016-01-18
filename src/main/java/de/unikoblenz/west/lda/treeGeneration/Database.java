@@ -86,6 +86,21 @@ public class Database {
 		} else
 			System.out.println("No need to create table Crawls (already exists).");
 		
+		if  ( !tableExists("Trees")){
+			sqlString="CREATE TABLE Trees "
+					+ " (Id INT NOT NULL AUTO_INCREMENT,"
+					+ " TreeID INT NOT NULL,"
+					+ " BagID INT NULL,"
+					+ " Current INT NOT NULL,"
+					+ " Predicate INT NULL,"
+					+ " Child_No INT NULL,"
+					+ " PRIMARY KEY (ID) );";
+			stmt.executeUpdate(sqlString);
+			System.out.println("Table Trees is created!");
+			}
+		else {System.out.println("You tried to create table Trees that already exist.");
+		}
+		
 		if  (!tableExists(tableName)){
 			sqlString="CREATE TABLE "+tableName+" "
 					+ " (Id INT NOT NULL AUTO_INCREMENT,"
@@ -101,6 +116,9 @@ public class Database {
 			System.out.println("Table "+tableName+" is created!");
 		} else
 			System.out.println("No need to create table "+tableName+" (already exists).");
+		
+		
+		
 	}
 
 	
