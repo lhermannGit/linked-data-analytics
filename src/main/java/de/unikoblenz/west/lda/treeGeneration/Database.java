@@ -51,6 +51,8 @@ public class Database {
 
 			// create two tables (one with RDF triples another with graph structure)
 			this.createTables(tableName);
+			
+			
 			this.serializeTree(rootNode);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -92,8 +94,9 @@ public class Database {
 					+ " StartLvl INT NOT NULL,"
 					+ " EndLvl INT NOT NULL,"
 					+ " Path VARCHAR(255) NOT NULL,"
-					+ " PRIMARY KEY (Id) ,"
-					+ " FOREIGN KEY (Crawl) REFERENCES Crawls (CrawlID) );";
+					+ " PRIMARY KEY (Id) "
+					//+ ", FOREIGN KEY (Crawl) REFERENCES Crawls (CrawlID) "
+					+ ");";
 			stmt.executeUpdate(sqlString);
 			System.out.println("Table "+tableName+" is created!");
 		} else
