@@ -30,7 +30,7 @@ public class Database {
 	static String password = "1234";
 	private Connection connection;
 	private Statement stmt;
-	static int bagid = 1;
+
 	
 	static String tableName="subtree_path";
 	
@@ -133,7 +133,7 @@ public class Database {
 			queueNodes.add(rootNode);
 			//int lvl=0;
 			int treeID;
-			
+			int bagid=rootNode.bagID;
 			try {
 			//fond the max id in the Table Tree and increment it in order to store new Tree
 			String query="SELECT MAX(TreeID) FROM Trees ;";
