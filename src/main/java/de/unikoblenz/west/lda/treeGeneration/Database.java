@@ -5,6 +5,8 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.LinkedList;
+import java.util.List;
 
 /*
  * This class provide connection to MariaDB, store subtrees into DB and provide access to the DB data
@@ -28,6 +30,7 @@ public class Database {
 	static String password = "1234";
 	private Connection connection;
 	private Statement stmt;
+	static int bagid = 1;
 	
 	static String tableName="subtree_path";
 	
@@ -48,6 +51,7 @@ public class Database {
 
 			// create two tables (one with RDF triples another with graph structure)
 			this.createTables(tableName);
+			this.serializeTree(rootNode);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -74,7 +78,7 @@ public class Database {
 			sqlString="CREATE TABLE Crawls "
 					+ " (CrawlID INT NOT NULL AUTO_INCREMENT,"
 					+ " Name VARCHAR(255) NOT NULL,"
-					+ " PRIMARY KEY (BagID) );";
+					+ " PRIMARY KEY (CrawlID) );";
 			stmt.executeUpdate(sqlString);
 			System.out.println("Table Crawls was created.");
 		} else
@@ -95,25 +99,69 @@ public class Database {
 		} else
 			System.out.println("No need to create table "+tableName+" (already exists).");
 	}
-	/*
-	 * FOREIGN KEY (Bag) REFERENCES Bags(BagID)
-	 * 
-	 *  CREATE TABLE `datamining`.`new_table` (
-	  `ID` INT NOT NULL AUTO_INCREMENT COMMENT '',
-	  `Path` VARCHAR(45) NOT NULL COMMENT '',
-	  `Bag` INT NULL COMMENT '',
-	  `EndLvl` INT NOT NULL COMMENT '',
-	  `Crawl` INT NULL COMMENT '',
-	  `StartLvl` INT NOT NULL COMMENT '',
-	  PRIMARY KEY (`ID`)  COMMENT '',
-	  INDEX `BagID_idx` (`Bag` ASC)  COMMENT '',
-	  CONSTRAINT `BagID`
-	    FOREIGN KEY (`Bag`)
-	    REFERENCES `datamining`.`Bags` (`BagID`)
-	    ON DELETE NO ACTION
-	    ON UPDATE NO ACTION);
-	 */
 
+	
+
+	public void serializeTree(RootNode rootNode) {
+		
+		///get the tree according to the rootNode
+		
+		LinkedList<Node> queueNodes = new LinkedList<Node>();
+		if (rootNode!=null)
+		{
+			queueNodes.add(rootNode);
+			//int lvl=0;
+			int treeID;
+			
+			try {
+			//fond the max id in the Table Tree and increment it in order to store new Tree
+			String query="SELECT MAX(TreeID) FROM Trees ;";
+			ResultSet res = this.stmt.executeQuery(query);
+			res.last();
+			treeID=res.getInt(1)+1;
+			
+			//Node parentnode=null;
+			Node currentnode;
+			
+			while(!queueNodes.isEmpty()){
+				currentnode = queueNodes.getFirst();
+				List<ChildNode> children = queueNodes.remove().getChildren();
+				
+				if (children.size()!=0)
+					{for (int n=0; n<children.size(); n++){
+						queueNodes.add(children.get(n));
+						
+						///store to DB
+						try {
+							
+							String SqlString="INSERT INTO Trees (TreeID, BagID, Current, Predicate, Child_No) VALUES("+treeID+" ,"+
+									bagid+","+currentnode.getName()+","+children.get(n).getPredicate()+","+children.get(n).getName()+");";
+							this.stmt.executeUpdate(SqlString);
+						} catch (SQLException e) {
+							// TODO Auto-generated catch block
+							System.out.println("Cannot save current_node,predicate,child_node into Table Trees!!");
+							e.printStackTrace();
+						}
+					}
+					/*if (queueNodes.getFirst()==children.get(0))
+						{parentnode=currentnode;
+						lvl+=1;}
+					else if ()
+					{}
+					*/
+				}
+				
+			}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}	
+		
+	}
+
+	
+	
+	
 	// runs any query string on the database
 	public ResultSet query(String Pattern) {
 		ResultSet result = null;
