@@ -1,12 +1,11 @@
 package de.unikoblenz.west.lda.input;
 
-import gnu.trove.map.hash.TIntIntHashMap;
-
 import java.util.ArrayList;
 
 import de.unikoblenz.west.lda.input.LookupCache.Cache;
 import de.unikoblenz.west.lda.input.LookupCache.Table;
 import de.unikoblenz.west.lda.treeGeneration.Database;
+import gnu.trove.map.hash.TIntIntHashMap;
 
 public class InputReduction {
 
@@ -18,7 +17,7 @@ public class InputReduction {
 	LookupCache objects;
 
 	public InputReduction(int upperBound, String prefix) {
-		Database db = new Database();
+		Database db = new Database(null);
 		predicates = new LookupCache(upperBound, Table.predicates, prefix, db);
 		objects = new LookupCache(upperBound, Table.objects, prefix, db);
 	}

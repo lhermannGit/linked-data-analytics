@@ -18,33 +18,35 @@ import de.unikoblenz.west.lda.trees.spout.RDFSpout;
  * This class provides a storm bolt that consumes the output of {@link RDFSpout}
  * and provides trees
  * 
- * @author Martin Koerner <info@mkoerner.de>, Olga Zagovora <zagovora@uni-koblenz.de>	
+ * @author Martin Koerner <info@mkoerner.de>, Olga Zagovora
+ *         <zagovora@uni-koblenz.de>
  *
  */
 public class TreeCreatorBolt extends BaseRichBolt {
 	private static final long serialVersionUID = 1L;
-	
-	OutputCollector collector;
 
-	public void prepare(@SuppressWarnings("rawtypes") Map conf, TopologyContext context,
-			OutputCollector collector) {
+	OutputCollector collector;
+	static volatile int bagID = 0;
+
+	public void prepare(@SuppressWarnings("rawtypes") Map conf, TopologyContext context, OutputCollector collector) {
 		this.collector = collector;
 	}
 
 	public void execute(Tuple tuple) {
-		Object treeObject=tuple.getValue(0);
+		Object treeObject = tuple.getValue(0);
 
-		if(treeObject.getClass()!=int[].class){
-			//TODO: better error handling
+		if (treeObject.getClass() != int[].class) {
+			// TODO: better error handling
 			System.out.println("tuple does not contain array");
 			this.collector.ack(tuple);
 			return;
 		}
 
-		int[]treeArray=(int[])treeObject;
+		int[] treeArray = (int[]) treeObject;
 
-		Window window=new Window();
-		List<RootNode>rootNodes=window.buildTree(treeArray);
+		Window window = new Window();
+		// TODO maybe sync for increment
+		List<RootNode> rootNodes = window.buildTree(treeArray, bagID++);
 		for (RootNode rootNode : rootNodes) {
 			this.collector.emit(tuple, new Values(rootNode));
 		}

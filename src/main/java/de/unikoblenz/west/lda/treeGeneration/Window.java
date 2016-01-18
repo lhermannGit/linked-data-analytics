@@ -45,7 +45,8 @@ public class Window {
 
 		String homeDir = System.getProperty("user.home");
 		Reader reader = new Reader(new File(
-				homeDir + FilePathFormatter.setSeparators("/research-lab/data/btc2014/crawls/06/data.nq-0.gz"))); // TODO path
+				homeDir + FilePathFormatter.setSeparators("/research-lab/data/btc2014/crawls/06/data.nq-0.gz"))); // TODO
+																													// path
 		try {
 			List<DisjointSet> sets = reader.read();
 			DisjointSet disjointSet = sets.get(0);
@@ -56,10 +57,12 @@ public class Window {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		arraySerializer.serializeArray(homeDir + FilePathFormatter.setSeparators("/research-lab/data/temp/array.ser"), // TODO path
+		arraySerializer.serializeArray(homeDir + FilePathFormatter.setSeparators("/research-lab/data/temp/array.ser"), // TODO
+																														// path
 				testArray);
 		testArray = arraySerializer
-				.deserializeArray(homeDir + FilePathFormatter.setSeparators("/research-lab/data/temp/array.ser")); // TODO path
+				.deserializeArray(homeDir + FilePathFormatter.setSeparators("/research-lab/data/temp/array.ser")); // TODO
+																													// path
 
 		// old test arrays
 		// testArray = new int[] {1,2,3,1, 1,4,5,1, 9,3,2,1,
@@ -73,7 +76,7 @@ public class Window {
 		// testArray = new int[] {1,99,3,1, 3,98,5,1, 5,97,6,1,
 		// 3,96,8,1, 1,88,3,1};
 		Window window = new Window();
-		List<RootNode> rootNodes = window.buildTree(testArray);
+		List<RootNode> rootNodes = window.buildTree(testArray, 0);
 		System.out.println("Number of rootNodes: " + rootNodes.size());
 
 		int rootNodeCounter = 0;
@@ -96,7 +99,7 @@ public class Window {
 		this.subtreeToDB = new SubtreeToDB();
 	}
 
-	public List<RootNode> buildTree(int[] inputArray) {
+	public List<RootNode> buildTree(int[] inputArray, int bagID) {
 
 		int rdfQuadsCount = 0;
 
@@ -132,7 +135,7 @@ public class Window {
 					// if newChildNode was not inserted yet, create new RootNode
 					// and
 					// link newChildNode to it
-					newRootNode = new RootNode(rdfSubject);
+					newRootNode = new RootNode(rdfSubject, bagID);
 					rootNodes.add(newRootNode);
 					newRootNode.addChildNode(newChildNode);
 					size = size + 2;
