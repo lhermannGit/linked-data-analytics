@@ -27,7 +27,7 @@ public class Window {
 	private List<RootNode> rootNodes;
 	private Iterator<RootNode> rootNodesIterator;
 
-	private SubtreeToDB subtreeToDB;
+
 
 	/**
 	 * Arguments: Path to input file
@@ -93,7 +93,7 @@ public class Window {
 	}
 
 	public Window() {
-		this.subtreeToDB = new SubtreeToDB();
+
 	}
 
 	public List<RootNode> buildTree(int[] inputArray) {
