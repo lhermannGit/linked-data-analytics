@@ -143,15 +143,18 @@ public class Database {
 			
 			//Node parentnode=null;
 			Node currentnode;
+			LinkedList <Node> visited= new LinkedList <Node>();
 			
 			while(!queueNodes.isEmpty()){
 				currentnode = queueNodes.getFirst();
+				
 				List<ChildNode> children = queueNodes.remove().getChildren();
 				
+				if (!visited.contains(currentnode) )
 				if (children.size()!=0)
 					{for (int n=0; n<children.size(); n++){
-						queueNodes.add(children.get(n));
-						
+						if (!visited.contains(children.get(n)) )
+						{queueNodes.add(children.get(n)); }
 						///store to DB
 						try {
 							
@@ -163,14 +166,15 @@ public class Database {
 							System.out.println("Cannot save current_node,predicate,child_node into Table Trees!!");
 							e.printStackTrace();
 						}
-					}
 					/*if (queueNodes.getFirst()==children.get(0))
 						{parentnode=currentnode;
 						lvl+=1;}
 					else if ()
 					{}
 					*/
+					}
 				}
+				visited.add(currentnode);
 				
 			}
 			} catch (SQLException e) {
