@@ -80,7 +80,7 @@ public class SubtreeBuilder {
 						endLvl++;
 					
 					// insert new subtree
-					boolean qry = db.saveSubtree(1, 1, 0, endLvl, res.getString("NewPath")); // TODO real Crawl & Bag
+					boolean qry = db.saveSubtree( 0, endLvl, res.getString("NewPath")); // TODO real Crawl & Bag
 					if (!qry)
 						System.out.println("ERROR on Insert: " + res.getString("NewPath"));
 					else
@@ -96,7 +96,7 @@ public class SubtreeBuilder {
 		// insert new subtree if path has only one element
 		if (path.size() == 1) {
 			String newPath = path.get(0) + "()";
-			boolean qry = db.saveSubtree(1, 1, 0, 0, newPath); // TODO real Crawl & Bag
+			boolean qry = db.saveSubtree( 0, 0, newPath); // TODO real Crawl & Bag
 			if (!qry)
 				System.out.println("ERROR on Create: " + newPath);
 			else

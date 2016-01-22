@@ -27,11 +27,11 @@ public class Database {
 	// database credentials
 	static String dbName = "datamining";
 	static String user = "root";
-	static String password = "1234";
+	static String password = "root";//""root
 	private Connection connection;
 	private Statement stmt;
-
-	
+	private int bagid;
+	private int crawlid=0;
 	static String tableName="subtree_path";
 	
 	public Database(RootNode rootNode) {
@@ -51,7 +51,7 @@ public class Database {
 
 			// create two tables (one with RDF triples another with graph structure)
 			this.createTables(tableName);
-			
+			bagid=rootNode.bagID;
 			
 			this.serializeTree(rootNode);
 		} catch (SQLException e) {
@@ -133,7 +133,7 @@ public class Database {
 			queueNodes.add(rootNode);
 			//int lvl=0;
 			int treeID;
-			int bagid=rootNode.bagID;
+			
 			try {
 			//fond the max id in the Table Tree and increment it in order to store new Tree
 			String query="SELECT MAX(TreeID) FROM Trees ;";
@@ -205,8 +205,8 @@ public class Database {
 	}
 	
 	// inserts a subtree into the database
-	public boolean saveSubtree(int crawl, int bag, int startLvl, int endLvl, String path) {
-		ResultSet rs = this.query("INSERT INTO subtree_path (Crawl, Bag, StartLvl, EndLvl, Path) VALUES (" + crawl + ", " + bag + ", " + startLvl + ", " + endLvl + ", '" + path + "');");
+	public boolean saveSubtree( int startLvl, int endLvl, String path) {
+		ResultSet rs = this.query("INSERT INTO subtree_path (Crawl, Bag, StartLvl, EndLvl, Path) VALUES (" + crawlid + ", " + bagid + ", " + startLvl + ", " + endLvl + ", '" + path + "');");
 		return rs != null;
 	}
 	
