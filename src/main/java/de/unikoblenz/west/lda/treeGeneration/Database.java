@@ -23,7 +23,7 @@ public class Database {
 
 	// JDBC driver name and database URL
 	//static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
-	static String DB_URL = "jdbc:mysql://localhost:3307/datamining";
+	static String DB_URL = "jdbc:mysql://localhost:3306/datamining";
 	// database credentials
 	static String dbName = "datamining";
 	static String user = "root";
