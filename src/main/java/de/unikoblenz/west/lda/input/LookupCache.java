@@ -43,8 +43,8 @@ public class LookupCache {
 			this.table = prefix + "predicates";
 			break;
 		}
-		db.query("DROP TABLE " + this.table);
-		db.query("CREATE TABLE " + this.table + " (k text, v int )");
+		db.query("DROP TABLE " + this.table+";");
+		db.query("CREATE TABLE " + this.table + " (k text, v int );");
 	}
 
 	public int get(char[] tupleElem) {
