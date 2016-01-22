@@ -53,4 +53,8 @@
    </dependency>
 
   </dependencies>
+  <properties>
+  	<source>1.8</source>
+  	<target>1.8</target>
+  </properties>
 </project>
