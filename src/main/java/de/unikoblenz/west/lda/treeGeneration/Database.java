@@ -51,9 +51,11 @@ public class Database {
 
 			// create two tables (one with RDF triples another with graph structure)
 			this.createTables(tableName);
-			bagid=rootNode.bagID;
-			
-			this.serializeTree(rootNode);
+
+			if (rootNode!=null)
+				{ bagid=rootNode.bagID;
+				this.serializeTree(rootNode);
+				}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
