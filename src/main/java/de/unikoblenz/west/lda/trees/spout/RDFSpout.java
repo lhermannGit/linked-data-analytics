@@ -45,7 +45,7 @@ public class RDFSpout extends BaseRichSpout {
 
 		//TODO: proper reading of directories
 		String homeDir = System.getProperty("user.home");
-		Reader reader=new Reader(new File(homeDir+FilePathFormatter.setSeparators("/research-lab/data/btc2014/crawls/06/data.nq-0.gz")));
+		Reader reader=new Reader(new File(homeDir+FilePathFormatter.setSeparators("/data/btc2014/crawls/06/data.nq-0.gz")));
 		//Reader reader=new Reader(new File("/home/martin/research-lab/data/btc2014/crawls/06/test"));
 		try {
 			List<DisjointSet>sets=reader.read();
