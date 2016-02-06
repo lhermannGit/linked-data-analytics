@@ -19,6 +19,8 @@ import java.util.List;
  * @author Olga Zagovora <zagovora@uni-koblenz.de>
  */
 
+
+
 public class Database {
 
 	// JDBC driver name and database URL
@@ -33,6 +35,16 @@ public class Database {
 	private int bagid;
 	private int crawlid=0;
 	static String tableName="subtree_path";
+	
+	private class MyNode{
+	    Node node;
+	    int lvl;
+
+	    private MyNode(Node node,int lvl) {
+	        this.node = node;
+	        this.lvl = lvl;
+	    }
+	}
 	
 	public Database(RootNode rootNode) {
 		// initialize
@@ -91,11 +103,13 @@ public class Database {
 		if  ( !tableExists("Trees")){
 			sqlString="CREATE TABLE Trees "
 					+ " (Id INT NOT NULL AUTO_INCREMENT,"
-					+ " TreeID INT NOT NULL,"
+					//+ " TreeID INT NOT NULL,"
 					+ " BagID INT NULL,"
-					+ " Current INT NOT NULL,"
+					+ " Parent INT NULL,"
 					+ " Predicate INT NULL,"
+					+ " Current INT NOT NULL,"
 					+ " Child_No INT NULL,"
+					+ " Lvl INT NOT NULL,"
 					+ " PRIMARY KEY (ID) );";
 			stmt.executeUpdate(sqlString);
 			System.out.println("Table Trees is created!");
@@ -128,56 +142,63 @@ public class Database {
 	public void serializeTree(RootNode rootNode) {
 		
 		///get the tree according to the rootNode
-		
-		LinkedList<Node> queueNodes = new LinkedList<Node>();
 		if (rootNode!=null)
-		{
-			queueNodes.add(rootNode);
-			//int lvl=0;
-			int treeID;
+		{	
+			LinkedList<MyNode> queueNodes = new LinkedList<MyNode>();
+			int lvl=0;
+			//int treeID;
+			int lastVisitedLvl=0;
+			MyNode currentnode;
+			LinkedList <Node> visited= new LinkedList <Node>();
+			queueNodes.add(new MyNode(rootNode,lvl));
 			
 			try {
-			//fond the max id in the Table Tree and increment it in order to store new Tree
+			
+			/*
+			//find the max id in the Table Tree and increment it in order to store new Tree
 			String query="SELECT MAX(TreeID) FROM Trees ;";
 			ResultSet res = this.stmt.executeQuery(query);
 			res.last();
 			treeID=res.getInt(1)+1;
-			
-			//Node parentnode=null;
-			Node currentnode;
-			LinkedList <Node> visited= new LinkedList <Node>();
+			*/
+				
+			//save first line, root node
+			String SqlString="INSERT INTO Trees ( BagID, Current, Lvl) VALUES("+
+					bagid+","+rootNode.getName()+","+lvl+");";
+			this.stmt.executeUpdate(SqlString);
+
 			
 			while(!queueNodes.isEmpty()){
 				currentnode = queueNodes.getFirst();
 				
-				List<ChildNode> children = queueNodes.remove().getChildren();
+				List<ChildNode> children = queueNodes.remove().node.getChildren();
+				int child_n=0;
 				
-				if (!visited.contains(currentnode) )
-				if (children.size()!=0)
+				if (currentnode.lvl!=lastVisitedLvl){
+					lastVisitedLvl++;}
+				
+				if (!visited.contains(currentnode.node) )
+				{if (children.size()!=0)
 					{for (int n=0; n<children.size(); n++){
+						
 						if (!visited.contains(children.get(n)) )
-						{queueNodes.add(children.get(n)); }
+						{queueNodes.add(new MyNode(children.get(n),currentnode.lvl+1));
+						}
 						///store to DB
 						try {
-							
-							String SqlString="INSERT INTO Trees (TreeID, BagID, Current, Predicate, Child_No) VALUES("+treeID+" ,"+
-									bagid+","+currentnode.getName()+","+children.get(n).getPredicate()+","+children.get(n).getName()+");";
+							lvl=lastVisitedLvl+1;
+							SqlString="INSERT INTO Trees ( BagID, Parent, Predicate, Current, Child_No, Lvl) VALUES("+
+									bagid+","+currentnode.node.getName()+","+children.get(n).getPredicate()+","+children.get(n).getName()+","+child_n+","+lvl+");";
 							this.stmt.executeUpdate(SqlString);
+							child_n++;
 						} catch (SQLException e) {
-							// TODO Auto-generated catch block
 							System.out.println("Cannot save current_node,predicate,child_node into Table Trees!!");
 							e.printStackTrace();
-						}
-					/*if (queueNodes.getFirst()==children.get(0))
-						{parentnode=currentnode;
-						lvl+=1;}
-					else if ()
-					{}
-					*/
+						}						
 					}
 				}
-				visited.add(currentnode);
-				
+				visited.add(currentnode.node);
+				}
 			}
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -188,7 +209,7 @@ public class Database {
 
 	
 	
-	
+
 	// runs any query string on the database
 	public ResultSet query(String Pattern) {
 		ResultSet result = null;
